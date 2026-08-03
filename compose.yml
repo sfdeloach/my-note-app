@@ -1,10 +1,12 @@
+# No reverse proxy in front of joplin-server: WireGuard already encrypts
+# tunnel traffic, and the home LAN is fully trusted (no untrusted/guest
+# devices), so TLS termination and security headers have nothing to protect
+# against here. Revisit only if a second service is ever added to the Pi.
 services:
   database:
     image: postgres:17.10-trixie
     restart: always
     shm_size: 128mb
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -17,6 +19,8 @@ services:
       retries: 5
       start_period: 30s
       timeout: 10s
+    networks:
+      - my-note-app-network
 
   joplin-server:
     image: joplin/server:3.7.1
@@ -42,6 +46,12 @@ services:
       - MAILER_AUTH_PASSWORD=${MAILER_AUTH_PASSWORD}
       - MAILER_NOREPLY_NAME=${MAILER_NOREPLY_NAME}
       - MAILER_NOREPLY_EMAIL=${MAILER_NOREPLY_EMAIL}
+    networks:
+      - my-note-app-network
+
+networks:
+  my-note-app-network:
+    driver: bridge
 
 volumes:
   joplin_db:

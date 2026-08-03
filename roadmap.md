@@ -34,7 +34,7 @@ Already complete: `compose.yml` with Joplin Server 3.7.1 + Postgres
 17.10-trixie, versions pinned (not `latest`), stack starts cleanly, WireGuard
 tunnel configured, admin/user account creation verified by email.
 
-## Stage 1 — Harden the current stack
+## Stage 1 — Harden the current stack (done)
 
 **Goal**: close unnecessary exposure and clean up leftover boilerplate before
 building anything new on top.
