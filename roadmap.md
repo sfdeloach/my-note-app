@@ -87,7 +87,7 @@ manual test file can be uploaded and then deleted from the bucket.
 in S3; confirm it can be decrypted locally with the passphrase
 (`gpg --decrypt`).
 
-## Stage 4 — Automate + alert
+## Stage 4 — Automate + alert (waiting for 8/7/26 to observe behavior)
 
 **Goal**: backups run unattended, and you find out immediately if they stop
 working — including if cron itself silently stops firing.
