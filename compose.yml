@@ -1,0 +1,47 @@
+services:
+  database:
+    image: postgres:17.10-trixie
+    restart: always
+    shm_size: 128mb
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DATABASE}
+    volumes:
+      - joplin_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U joplin -d joplin"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  joplin-server:
+    image: joplin/server:3.7.1
+    restart: unless-stopped
+    depends_on:
+      - database
+    ports:
+      - "22300:22300"
+    environment:
+      - APP_BASE_URL=${APP_BASE_URL}
+      - APP_PORT=${APP_PORT}
+      - DB_CLIENT=${DB_CLIENT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - MAILER_ENABLED=${MAILER_ENABLED}
+      - MAILER_HOST=${MAILER_HOST}
+      - MAILER_PORT=${MAILER_PORT}
+      - MAILER_SECURITY=${MAILER_SECURITY}
+      - MAILER_AUTH_USER=${MAILER_AUTH_USER}
+      - MAILER_AUTH_PASSWORD=${MAILER_AUTH_PASSWORD}
+      - MAILER_NOREPLY_NAME=${MAILER_NOREPLY_NAME}
+      - MAILER_NOREPLY_EMAIL=${MAILER_NOREPLY_EMAIL}
+
+volumes:
+  joplin_db:
