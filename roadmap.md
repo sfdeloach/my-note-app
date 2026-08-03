@@ -70,7 +70,7 @@ backups need.
 **Verify**: `aws s3 ls s3://<bucket>` works with the new credentials; a
 manual test file can be uploaded and then deleted from the bucket.
 
-## Stage 3 — Backup script + encryption
+## Stage 3 — Backup script + encryption (done)
 
 **Goal**: a script that produces one complete, encrypted, restorable backup.
 
