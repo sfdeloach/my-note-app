@@ -54,7 +54,7 @@ building anything new on top.
 no host binding for port 5432; Joplin is still reachable on 22300 via
 WireGuard and LAN; an existing Joplin sync client can still sync.
 
-## Stage 2 — AWS CLI + IAM setup
+## Stage 2 — AWS CLI + IAM setup (done)
 
 **Goal**: get the Pi able to talk to S3 with credentials scoped to only what
 backups need.
