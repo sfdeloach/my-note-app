@@ -1,0 +1,12 @@
+# Installed via: crontab scripts/backup.cron
+# (This REPLACES your entire personal crontab — see README caveat. If you
+# ever add a second cron job by hand via `crontab -e`, update this file to
+# match afterward instead of re-running the install command.)
+PATH=/usr/local/bin:/usr/bin:/bin
+
+# Joplin nightly backup — roadmap.md Stage 4. 03:15 local time, clear of
+# Debian's cron.daily window. flock -n: skip this run rather than overlap
+# if a previous run is still uploading (e.g. slow network) — a skipped run
+# is caught by the healthchecks.io dead-man's-switch like any other missed
+# ping.
+15 3 * * * /usr/bin/flock -n /tmp/joplin-backup.lock /home/steven/workspace/my-note-app/scripts/backup.sh >> /home/steven/joplin-backup.log 2>&1
