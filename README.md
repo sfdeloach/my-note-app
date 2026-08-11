@@ -66,19 +66,43 @@ what the alert email tells you.
 
 ## Restore (catastrophic failure)
 
-`[TO BE REVISITED — no restore procedure exists yet.]` AWS/IAM setup
-(Stage 2) and the backup script (Stage 3) are complete, and an encrypted
-backup exists in S3, but a restore from it has not yet been tested
-end-to-end (roadmap.md Stage 5). This section will be written once that
-test passes — a scripted-but-untested restore doesn't count.
+`./scripts/restore-test.sh up` proves a real S3 backup is restorable: it
+downloads the latest (or a given) backup, decrypts it, and restores it into
+a throwaway Compose stack — separate project name (`joplin-restore-test`),
+separate volume, separate host port (22301) — so it can run safely
+side-by-side with production for verification. It deliberately restores
+using the `.env` bundled *inside* the backup archive, not the live one, so
+this also proves that half of the backup is sufficient for a real disaster
+recovery.
+
+```
+./scripts/restore-test.sh up [s3-key]   # restore latest backup, or a specific one
+```
+
+Wait for "Restore-test stack is up: http://<pi-address>:22301", then log in
+and confirm your notes are present and correct. When done:
+
+```
+./scripts/restore-test.sh down          # tears down the throwaway stack + volume
+```
+
+This is roadmap.md Stage 5, run on a recurring quarterly basis (a calendar
+reminder is set). Last verified end-to-end: 2026-08-11 — 243 items restored,
+both accounts present, notes confirmed correct in the browser, ~30s to a
+restorable state.
+
+**Why a separate compose file**: `compose.restore-test.yml` is a standalone
+file, not merged with `compose.yml` via multiple `-f` flags — Compose
+concatenates rather than replaces list-type keys like `ports` across merged
+files, so an override would make the throwaway stack also try to bind host
+port 22300, which production already holds. Keep its image tags in sync with
+`compose.yml` by hand if those ever change.
 
 ## Maintenance / Health Checks
 
 `[TO BE REVISITED — no maintenance checks are implemented yet.]`
 
-- Quarterly restore test (roadmap.md Stage 5): the quarterly cadence is
-  decided, but the test procedure itself doesn't exist yet (see Restore
-  above).
+- Quarterly restore test (roadmap.md Stage 5, done): see Restore above.
 - Ongoing monitoring — SMART/disk-space/container-health cron checks
   (roadmap.md Stage 6): not implemented yet.
 

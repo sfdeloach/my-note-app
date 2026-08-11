@@ -1,0 +1,70 @@
+# Throwaway stack for the quarterly restore test (roadmap.md Stage 5), driven
+# by scripts/restore-test.sh. NEVER used for production.
+#
+# This intentionally duplicates compose.yml's service definitions rather than
+# layering on top of it with `-f compose.yml -f compose.restore-test.yml`,
+# because Compose concatenates (not replaces) list-type keys like `ports`
+# across merged files. An override here would make this stack ALSO try to
+# bind host port 22300 -- which production already holds -- and `up` would
+# just fail with "port is already allocated" instead of using the throwaway
+# port below.
+#
+# Keep this in sync with compose.yml by hand: image tags and the
+# joplin-server environment variable list. The only INTENTIONAL differences
+# are:
+#   - joplin-server's host-side port (22301 instead of 22300), so this stack
+#     can run side-by-side with production on the same Pi
+#   - restart: "no", so a throwaway stack never survives a reboot or lingers
+#     if you forget to tear it down
+#   - MAILER_ENABLED is forced off, so poking around the restored instance
+#     can never trigger a real email through production's SMTP credentials
+#   - run under a separate Compose project name (-p joplin-restore-test, set
+#     by the script, not here), so the `joplin_db` volume below resolves to
+#     `joplin-restore-test_joplin_db` -- fully separate from production's
+#     `my-note-app_joplin_db`
+services:
+  database:
+    image: postgres:17.10-trixie
+    restart: "no"
+    shm_size: 128mb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DATABASE}
+    volumes:
+      - joplin_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U joplin -d joplin"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    networks:
+      - restore-test-network
+
+  joplin-server:
+    image: joplin/server:3.7.1
+    restart: "no"
+    depends_on:
+      - database
+    ports:
+      - "22301:22300"
+    environment:
+      - APP_BASE_URL=${APP_BASE_URL}
+      - APP_PORT=${APP_PORT}
+      - DB_CLIENT=${DB_CLIENT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - MAILER_ENABLED=0
+    networks:
+      - restore-test-network
+
+networks:
+  restore-test-network:
+    driver: bridge
+
+volumes:
+  joplin_db:

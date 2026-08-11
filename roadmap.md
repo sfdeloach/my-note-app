@@ -104,7 +104,7 @@ working — including if cron itself silently stops firing.
 exactly 3 rotating snapshots; deliberately disable the cron job once and
 confirm the dead-man's-switch alert fires.
 
-## Stage 5 — Restore test (quarterly)
+## Stage 5 — Restore test (quarterly) (done)
 
 **Goal**: prove the backup is actually restorable, on a repeatable schedule.
 
