@@ -121,14 +121,15 @@ confirm the dead-man's-switch alert fires.
 **Verify**: notes appear correctly in the ephemeral instance; note roughly
 how long the whole process took, as an informal recovery-time estimate.
 
-## Stage 6 — Lightweight monitoring
+## Stage 6 — Lightweight monitoring (waiting for 8/18/26 to observe behavior)
 
-**Goal**: catch disk exhaustion, SSD wear, and container problems early,
-without standing up a heavy monitoring stack.
+**Goal**: catch disk exhaustion, drive health degradation, and container
+problems early, without standing up a heavy monitoring stack.
 
 **Tasks**:
-- Install `smartmontools`; add a cron check of SMART wear-leveling
-  attributes on the USB SSD.
+- Install `smartmontools`; add a cron check of SMART health attributes
+  (reallocated/pending sector counts — this is a spinning HDD, not an SSD,
+  so there's no wear-leveling attribute to watch) on the USB-attached HDD.
 - Add a cron check of free disk space against a threshold.
 - Add a basic container health check (e.g. `docker compose ps` exit
   states).

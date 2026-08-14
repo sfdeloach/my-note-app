@@ -100,11 +100,25 @@ port 22300, which production already holds. Keep its image tags in sync with
 
 ## Maintenance / Health Checks
 
-`[TO BE REVISITED — no maintenance checks are implemented yet.]`
-
 - Quarterly restore test (roadmap.md Stage 5, done): see Restore above.
-- Ongoing monitoring — SMART/disk-space/container-health cron checks
-  (roadmap.md Stage 6): not implemented yet.
+- Ongoing monitoring (roadmap.md Stage 6): `./scripts/monitor.sh` checks
+  three things — SMART health on the boot/data drive (`/dev/sda`, a
+  spinning HDD, not an SSD — see CLAUDE.md), free space on `/` against an
+  85% threshold, and container status for both `database` and
+  `joplin-server`. It requires passwordless `sudo smartctl` (see
+  `/etc/sudoers.d/smartctl-monitor`, scoped to just that binary) since SMART
+  data needs root and cron doesn't run as root.
 
-This section will list the actual commands/checklist once those stages are
-built.
+  ```
+  ./scripts/monitor.sh
+  ```
+
+  Runs nightly via cron at 03:45 (installed the same way as backups, from
+  `scripts/backup.cron`), 30 minutes after the backup job so they don't
+  compete for disk I/O. Uses the same dead-man's-switch pattern as backups,
+  but pings a **separate** healthchecks.io check
+  (`MONITOR_HEALTHCHECK_URL` in `.env`) — a monitoring alert and a backup
+  alert are distinguishable by which check fired. On failure, the alert
+  includes which specific check(s) failed (disk space, SMART, or a named
+  container) as the ping body. Local output also lands in
+  `~/joplin-monitor.log`.

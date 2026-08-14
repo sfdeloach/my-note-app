@@ -2,7 +2,7 @@
 
 Self-hosted [Joplin](https://joplinapp.org/) note server for personal/work
 notes, running as Docker Compose services (Joplin Server + Postgres) on a
-Raspberry Pi 5 (4GB RAM, 1TB USB SSD, Debian). Reachable only via a WireGuard
+Raspberry Pi 5 (4GB RAM, 320GB USB-attached spinning HDD, Debian). Reachable only via a WireGuard
 tunnel or trusted home LAN — no public inbound exposure.
 
 There's no application code here to build/lint/test in the traditional
