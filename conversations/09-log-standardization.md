@@ -63,7 +63,59 @@ output shape matches the intended format exactly. Full end-to-end
 verification (a real backup and a real monitor run producing the new log
 format) is pending tonight's 03:15/03:45 cron cycle — not yet observed.
 
-**Not yet done:** nothing outstanding from this session. Existing log
-history in `~/joplin-backup.log` / `~/joplin-monitor.log` was left as-is
-(old-format entries); new entries append in the new format starting with
-tonight's run.
+**Not yet done (at the time):** existing log history in
+`~/joplin-backup.log` / `~/joplin-monitor.log` was left as-is (old-format
+entries); new entries append in the new format starting with the next
+cron run.
+
+## Follow-up: log rotation
+
+**Request:** once the new log format was in place, a natural next question
+was how to keep `~/joplin-backup.log`/`~/joplin-monitor.log` from growing
+unbounded — whether to ever delete them, whether hand-editing was safe, and
+what happens if the file is deleted out from under the `>>` cron
+redirection.
+
+**Explained (no code changes for this part):**
+- Neither script owns its log file — `scripts/backup.cron`'s `>> file
+  2>&1` redirection is what routes output to a file at all; run manually,
+  the same `echo`/`printf` calls just go to the terminal. Cron has no
+  terminal, so without that redirect its default behavior is to email
+  output to the crontab owner — not set up here, hence the log files.
+- Hand-editing a live log is riskier than it looks: most editors write a
+  new file and rename over the original rather than editing in place,
+  which detaches the inode a concurrently-running cron job's `>>` file
+  descriptor is still writing to. Low-probability given the 03:15/03:45
+  schedule, but avoidable by not doing it at all.
+- `>>` creates the file if it doesn't exist (identical to `>` in that one
+  case) — deleting a log by hand causes zero disruption; the next cron run
+  just creates a fresh one. This is the same mechanism that makes
+  `logrotate`'s rename-then-let-cron-recreate approach work with no
+  `copytruncate`/signal-handling needed, unlike a long-lived daemon that
+  holds its log open continuously.
+
+**Decision:** use `logrotate` (already present on Debian, already run
+daily via `/etc/cron.daily/logrotate` — no new cron job needed) rather
+than a custom trimming script. `weekly` / `rotate 8` / `compress` keeps
+~2 months of compressed history. Config lives at
+`/etc/logrotate.d/joplin` on the Pi — host config, not versioned in this
+repo, same precedent as `/etc/sudoers.d/smartctl-monitor`.
+
+**Done:**
+- `README.md`: added a "Log rotation" bullet under Maintenance / Health
+  Checks documenting the `/etc/logrotate.d/joplin` config and the
+  no-`copytruncate`-needed reasoning.
+
+**Manual steps completed (by user, outside what I can do unattended):**
+- Created `/etc/logrotate.d/joplin` with the documented config.
+- Verified with `sudo logrotate -d ...` (dry run, no errors).
+- Verified with `sudo logrotate -f ...` (forced real rotation) —
+  `.1`/`.1.gz` rotated files appeared, original log files gone as
+  expected.
+- Confirmed a fresh `backup.sh` run recreated `joplin-backup.log` cleanly
+  with just the new entry.
+- Confirmed `/var/lib/logrotate/status` shows both log paths with today's
+  rotation date.
+
+**Verified:** all six setup/verification steps above confirmed working by
+the user on the Pi.

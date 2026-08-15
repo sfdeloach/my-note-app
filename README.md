@@ -122,3 +122,29 @@ port 22300, which production already holds. Keep its image tags in sync with
   includes which specific check(s) failed (disk space, SMART, or a named
   container) as the ping body. Local output also lands in
   `~/joplin-monitor.log`.
+
+- **Log rotation**: `~/joplin-backup.log` and `~/joplin-monitor.log` are
+  plain cron output (`>> file 2>&1` in `scripts/backup.cron`) — neither
+  script manages its own log file. Rotation is handled by `logrotate`
+  (already present on Debian, run daily via `/etc/cron.daily/logrotate` —
+  no new cron job needed), configured via a drop-in at
+  `/etc/logrotate.d/joplin` (host config, not versioned in this repo, same
+  as the `/etc/sudoers.d/smartctl-monitor` rule):
+
+  ```
+  /home/steven/joplin-backup.log /home/steven/joplin-monitor.log {
+      weekly
+      rotate 8
+      compress
+      missingok
+      notifempty
+  }
+  ```
+
+  No `create`/`copytruncate` directive is needed: unlike a daemon that
+  holds its log open for its whole lifetime, each cron run opens the file
+  fresh and closes it when the script exits, so after `logrotate` renames
+  the file out from under it, the next night's cron run just creates a new
+  one at that path — the same thing that happens if the file is deleted by
+  hand. Keeps roughly 2 months of compressed history (8 weekly rotations)
+  before the oldest is dropped.
