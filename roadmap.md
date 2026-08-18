@@ -121,7 +121,7 @@ confirm the dead-man's-switch alert fires.
 **Verify**: notes appear correctly in the ephemeral instance; note roughly
 how long the whole process took, as an informal recovery-time estimate.
 
-## Stage 6 — Lightweight monitoring (waiting for 8/18/26 to observe behavior)
+## Stage 6 — Lightweight monitoring (done)
 
 **Goal**: catch disk exhaustion, drive health degradation, and container
 problems early, without standing up a heavy monitoring stack.
@@ -140,7 +140,7 @@ problems early, without standing up a heavy monitoring stack.
 condition and confirm an alert fires; confirm no alerts in the normal
 healthy state.
 
-## Stage 7 — Update strategy (process, not code)
+## Stage 7 — Update strategy (process, not code) (done)
 
 **Goal**: keep Joplin and Postgres current without risking data loss from an
 unplanned major-version jump.

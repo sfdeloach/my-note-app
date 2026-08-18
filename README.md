@@ -148,3 +148,11 @@ port 22300, which production already holds. Keep its image tags in sync with
   one at that path — the same thing that happens if the file is deleted by
   hand. Keeps roughly 2 months of compressed history (8 weekly rotations)
   before the oldest is dropped.
+
+## Updates
+
+Joplin Server and Postgres image tags in `compose.yml` are bumped manually
+and deliberately, never automated, never `latest`. See `UPDATING.md` for
+the full checklist (where to check for new versions, what counts as a
+low-risk bump vs. a Postgres major version requiring dump/reload, and a
+log of past checks).
