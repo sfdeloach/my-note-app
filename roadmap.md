@@ -19,10 +19,12 @@ already exists matters more than adding new capability.
 - **Storage mode**: `STORAGE_DRIVER` is unset, so Joplin defaults to
   `Database` mode — all notes and attachments live in Postgres. A `pg_dump`
   is a complete backup; no separate filesystem attachment sync is needed.
-- **AI features**: text-to-speech is a real, wanted use case (not
-  speculative), scoped as an on-demand batch job — not a resident service —
-  given the 4GB RAM budget already shared by Joplin + Postgres.
-  Speech-to-text (formerly Stage 8) was dropped — see Stage 8 below.
+- **AI features**: both speech-to-text (Stage 8) and text-to-speech
+  (Stage 9) were considered and dropped before implementation. Native
+  OS/phone capabilities — dictation, and built-in read-aloud (Android
+  Select to Speak, iOS Speak Screen) — already cover the underlying needs
+  without adding infrastructure to this project. See Stage 8/Stage 9
+  below.
 - **Monitoring**: lightweight cron-based checks only, reusing the backup
   alert channel — no Prometheus/Grafana, too heavy for this hardware.
 - **Updates**: fully manual and deliberate, not automated.
@@ -172,14 +174,23 @@ manually in a separate app rather than building and maintaining a pipeline
 for it. See `conversations/12-drop-stage8-speech-to-text.md` for the full
 discussion.
 
-## Stage 9 — Text-to-speech for notes
+## Stage 9 — Text-to-speech for notes (dropped)
 
-**Goal**: have notes read back to you, again without a resident service.
+Scoped originally as "set up Piper," but the real ask behind it was bigger:
+a one-tap play button inside the Joplin app to listen to any note while
+driving or doing chores. Joplin's own ecosystem has no read-aloud feature
+(an open, unresolved forum request since 2019), and building that true
+in-app experience would mean either a custom Joplin plugin plus a small
+always-listening HTTP endpoint on the Pi — conflicting with the
+no-resident-service and no-reverse-proxy decisions above — or pre-generated
+audio attachments, which hits the same headless-Joplin-client-for-API-access
+wall Stage 8 did, and isn't spontaneous. Dropped because both Android
+("Select to Speak") and iOS ("Speak Screen") already read any on-screen
+text aloud, offline, built into the OS, at zero engineering cost — which
+covers the actual need. See
+`conversations/13-drop-stage9-text-to-speech.md` for the full discussion.
 
-**Tasks**:
-- Check the Joplin plugin ecosystem for existing TTS support first.
-- If needed, set up Piper as an on-demand script that generates audio for a
-  given note.
+---
 
-**Verify**: generate and play back audio for a sample note; confirm quality
-and resource usage are acceptable as an on-demand job.
+**Roadmap resolved**: all 9 stages are now either done or deliberately
+dropped. No open stages remain.
