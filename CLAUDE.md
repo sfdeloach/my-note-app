@@ -13,7 +13,8 @@ management, and executing the stages in `roadmap.md`.
 
 `roadmap.md` is the single source of truth for what's done and what's next
 (9 stages: hardening → AWS/IAM setup → backup script → automate/alert →
-restore test → monitoring → update strategy → speech-to-text → text-to-speech).
+restore test → monitoring → update strategy → speech-to-text (dropped) →
+text-to-speech).
 This file intentionally does not restate current stage status — check
 `roadmap.md` directly so this doesn't go stale.
 
@@ -29,9 +30,12 @@ re-litigate them without new information:
 - **Storage mode is `Database`.** `STORAGE_DRIVER` is unset, so Joplin puts
   attachments in Postgres, not the filesystem. This means a `pg_dump` alone
   is a complete backup — no separate filesystem sync needed.
-- **AI features (speech-to-text, text-to-speech) are on-demand batch jobs
-  only, never resident services.** The 4GB RAM budget is already shared by
-  Joplin + Postgres; a general local LLM is out of scope for this hardware.
+- **Text-to-speech (Stage 9) is an on-demand batch job only, never a
+  resident service.** The 4GB RAM budget is already shared by Joplin +
+  Postgres; a general local LLM is out of scope for this hardware.
+  Speech-to-text (Stage 8) was dropped — native OS/phone dictation already
+  covers live note-taking, and one-off transcription of existing audio is
+  rare enough to handle manually in a separate app.
 - **Monitoring is lightweight and cron-based**, reusing the same alert
   channel as backups — no Prometheus/Grafana.
 - **Updates are manual and deliberate, never automated, never `latest`

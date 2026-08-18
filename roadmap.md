@@ -19,9 +19,10 @@ already exists matters more than adding new capability.
 - **Storage mode**: `STORAGE_DRIVER` is unset, so Joplin defaults to
   `Database` mode — all notes and attachments live in Postgres. A `pg_dump`
   is a complete backup; no separate filesystem attachment sync is needed.
-- **AI features**: both speech-to-text and text-to-speech are real, wanted
-  use cases (not speculative), scoped as on-demand batch jobs — not resident
-  services — given the 4GB RAM budget already shared by Joplin + Postgres.
+- **AI features**: text-to-speech is a real, wanted use case (not
+  speculative), scoped as an on-demand batch job — not a resident service —
+  given the 4GB RAM budget already shared by Joplin + Postgres.
+  Speech-to-text (formerly Stage 8) was dropped — see Stage 8 below.
 - **Monitoring**: lightweight cron-based checks only, reusing the backup
   alert channel — no Prometheus/Grafana, too heavy for this hardware.
 - **Updates**: fully manual and deliberate, not automated.
@@ -158,21 +159,18 @@ unplanned major-version jump.
 **Verify**: checklist exists as a document; do one dry run of checking for
 available updates using it.
 
-## Stage 8 — Speech-to-text for voice notes
+## Stage 8 — Speech-to-text for voice notes (dropped)
 
-**Goal**: get voice notes transcribed to searchable text, without a resident
-service eating into the 4GB RAM budget.
-
-**Tasks**:
-- Check the current Joplin plugin ecosystem for existing Whisper-based
-  transcription support before building anything custom.
-- If nothing sufficient exists, set up whisper.cpp (tiny or base model) as an
-  on-demand script/job — triggered manually or on a schedule, not always
-  running.
-
-**Verify**: transcribe a real voice note; check transcription accuracy and
-speed are acceptable, and confirm memory usage stays within budget for the
-duration of the job (with Joplin + Postgres also running).
+Scoped originally to transcribe recorded voice notes with whisper.cpp, but
+dropped before implementation. Two things drove this: Joplin Server exposes
+no Data API (only Desktop/Mobile/CLI clients do), so writing a transcript
+back into a note safely would've required running a headless Joplin client
+on the Pi just for API access; and on reconsideration, the use case itself
+is thin — native OS/phone dictation already covers live note-taking, and
+transcribing an already-recorded audio file is rare enough to handle
+manually in a separate app rather than building and maintaining a pipeline
+for it. See `conversations/12-drop-stage8-speech-to-text.md` for the full
+discussion.
 
 ## Stage 9 — Text-to-speech for notes
 
