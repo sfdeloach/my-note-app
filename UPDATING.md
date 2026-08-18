@@ -1,6 +1,6 @@
 # Updating Joplin Server & Postgres
 
-This is roadmap.md Stage 7: a manual, deliberate process for keeping the
+This is docs/roadmap.md Stage 7: a manual, deliberate process for keeping the
 pinned image tags in `compose.yml` current — never automated, never
 `latest`. Run through this checklist periodically (there's no fixed
 schedule; treat "it's been a while" or a security advisory as the trigger).
@@ -73,4 +73,4 @@ schedule; treat "it's been a while" or a security advisory as the trigger).
 
 | Date | Joplin Server | Postgres | Action |
 |------|---------------|----------|--------|
-| 2026-08-18 | 3.7.1 checked — newest available on Docker Hub, no bump | 17.10-trixie checked — 17.11-trixie available (minor, same major) | Dry run only (roadmap.md Stage 7 Verify step) — no changes applied. Postgres minor bump available and low-risk whenever it's convenient to apply. |
+| 2026-08-18 | 3.7.1 checked — newest available on Docker Hub, no bump | 17.10-trixie checked — 17.11-trixie available (minor, same major) | Dry run only (docs/roadmap.md Stage 7 Verify step) — no changes applied. Postgres minor bump available and low-risk whenever it's convenient to apply. |

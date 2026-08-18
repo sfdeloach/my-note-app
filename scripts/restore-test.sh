@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Quarterly restore test (roadmap.md Stage 5). Spins up a throwaway Compose
+# Quarterly restore test (docs/roadmap.md Stage 5). Spins up a throwaway Compose
 # stack (compose.restore-test.yml, project name joplin-restore-test), restores
 # the latest (or a chosen) S3 backup into it, and leaves it running for manual
 # verification at http://<pi-address>:22301. Run `down` afterwards to tear it

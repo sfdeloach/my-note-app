@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lightweight health monitoring — roadmap.md Stage 6. Checks SMART drive
+# Lightweight health monitoring — docs/roadmap.md Stage 6. Checks SMART drive
 # health, disk space, and container status; reports through the same
 # dead-man's-switch pattern backup.sh uses (Stage 4), on a separate
 # healthchecks.io check so backup and monitoring alerts stay distinguishable.
@@ -10,7 +10,7 @@ REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 ENV_FILE="$REPO_ROOT/.env"
 
 # Pi-specific constants — not secrets, so kept here rather than in .env.
-# See CLAUDE.md / roadmap.md Stage 6 for hardware details.
+# See CLAUDE.md / docs/roadmap.md Stage 6 for hardware details.
 SMARTCTL_BIN=/usr/sbin/smartctl
 SMART_DEVICE=/dev/sda
 DISK_MOUNT=/

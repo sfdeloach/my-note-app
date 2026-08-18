@@ -1,8 +1,10 @@
 # my-note-app
 
-Self-hosted Joplin note server. See `CLAUDE.md` for architecture decisions
-and `roadmap.md` for the stage-by-stage plan and current status — not
-repeated here.
+Self-hosted Joplin note server. See `CLAUDE.md` for architecture decisions.
+
+**Status: complete, in maintenance mode.** All 9 planned stages are done or
+deliberately dropped — see `docs/roadmap.md` and `docs/conversations/` for
+the full history, kept for reference only.
 
 ## Start / Stop
 
@@ -23,7 +25,7 @@ of the database plus a copy of `.env` (needed for a full restore), bundled
 into a tar and encrypted with `gpg --symmetric --cipher-algo AES256`, then
 uploaded to S3. Requires `.env` present (including `BACKUP_S3_BUCKET`,
 `BACKUP_HEALTHCHECK_URL`, and `BACKUP_GPG_PASSPHRASE_FILE`) and the AWS CLI
-already configured (roadmap.md Stage 2).
+already configured (docs/roadmap.md Stage 2).
 
 ```
 ./scripts/backup.sh
@@ -34,7 +36,7 @@ Backups land in `s3://sfdeloach-joplin-backups/` as
 are kept — the script deletes older ones from S3 after each successful
 upload.
 
-**Automation (roadmap.md Stage 4)**: the script runs nightly via cron,
+**Automation (docs/roadmap.md Stage 4)**: the script runs nightly via cron,
 installed from the versioned `scripts/backup.cron`:
 
 ```
@@ -86,7 +88,7 @@ and confirm your notes are present and correct. When done:
 ./scripts/restore-test.sh down          # tears down the throwaway stack + volume
 ```
 
-This is roadmap.md Stage 5, run on a recurring quarterly basis (a calendar
+This is docs/roadmap.md Stage 5, run on a recurring quarterly basis (a calendar
 reminder is set). Last verified end-to-end: 2026-08-11 — 243 items restored,
 both accounts present, notes confirmed correct in the browser, ~30s to a
 restorable state.
@@ -100,8 +102,8 @@ port 22300, which production already holds. Keep its image tags in sync with
 
 ## Maintenance / Health Checks
 
-- Quarterly restore test (roadmap.md Stage 5, done): see Restore above.
-- Ongoing monitoring (roadmap.md Stage 6): `./scripts/monitor.sh` checks
+- Quarterly restore test (docs/roadmap.md Stage 5, done): see Restore above.
+- Ongoing monitoring (docs/roadmap.md Stage 6): `./scripts/monitor.sh` checks
   three things — SMART health on the boot/data drive (`/dev/sda`, a
   spinning HDD, not an SSD — see CLAUDE.md), free space on `/` against an
   85% threshold, and container status for both `database` and

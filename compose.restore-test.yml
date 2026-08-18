@@ -1,4 +1,4 @@
-# Throwaway stack for the quarterly restore test (roadmap.md Stage 5), driven
+# Throwaway stack for the quarterly restore test (docs/roadmap.md Stage 5), driven
 # by scripts/restore-test.sh. NEVER used for production.
 #
 # This intentionally duplicates compose.yml's service definitions rather than

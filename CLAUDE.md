@@ -7,16 +7,18 @@ tunnel or trusted home LAN — no public inbound exposure.
 
 There's no application code here to build/lint/test in the traditional
 sense; the "work" in this repo is Docker Compose config, `.env` secrets
-management, and executing the stages in `roadmap.md`.
+management, and ongoing maintenance — deliberate image-version bumps
+(`UPDATING.md`), backups, monitoring, and the quarterly restore test.
 
-## Where progress lives
+## Project status
 
-`roadmap.md` is the single source of truth for what's done and what's next
-(9 stages: hardening → AWS/IAM setup → backup script → automate/alert →
-restore test → monitoring → update strategy → speech-to-text (dropped) →
-text-to-speech (dropped)).
-This file intentionally does not restate current stage status — check
-`roadmap.md` directly so this doesn't go stale.
+Complete, in maintenance mode. All 9 originally-planned stages (hardening →
+AWS/IAM setup → backup script → automate/alert → restore test → monitoring
+→ update strategy → speech-to-text (dropped) → text-to-speech (dropped))
+are done or deliberately dropped. `docs/roadmap.md` has the full
+stage-by-stage history; `docs/conversations/` has the numbered session log.
+Both are historical reference only — not loaded automatically, read on
+demand if past reasoning is needed.
 
 ## Architecture decisions already made
 
@@ -35,8 +37,8 @@ re-litigate them without new information:
   built-in read-aloud (Android Select to Speak, iOS Speak Screen) — already
   cover the underlying needs without adding a resident service, a reverse
   proxy, or a headless Joplin client (needed for API access since Joplin
-  Server itself has no Data API) to this project. See roadmap.md Stage
-  8/Stage 9 for the full reasoning.
+  Server itself has no Data API) to this project. See docs/roadmap.md
+  Stage 8/Stage 9 for the full reasoning.
 - **Monitoring is lightweight and cron-based**, reusing the same alert
   channel as backups — no Prometheus/Grafana.
 - **Updates are manual and deliberate, never automated, never `latest`
@@ -52,11 +54,13 @@ a placeholder, not in `.env`.
 
 ## Conversation log
 
-`conversations/` holds one numbered file per planning/work session
-(`00-initial-prompt.md` is the first). This repo has no commits yet, so this
-is the durable record of project history and decisions — at the end of a
-session with meaningful discussion or decisions, add the next numbered file
-(`01-...`, `02-...`, etc.) summarizing what was discussed/decided/done.
+`docs/conversations/` holds one numbered file per planning/work session
+(`00-initial-prompt.md` is the first, `13-...` is the most recent — the
+roadmap-closeout entries). This is the durable record of project history
+and decisions — at the end of a session with meaningful discussion or
+decisions, add the next numbered file (`14-...`, etc.) summarizing what was
+discussed/decided/done. Expect this to happen less often now that the
+project is in maintenance mode.
 
 ## Communication style
 

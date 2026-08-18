@@ -4,14 +4,14 @@
 # match afterward instead of re-running the install command.)
 PATH=/usr/local/bin:/usr/bin:/bin
 
-# Joplin nightly backup — roadmap.md Stage 4. 03:15 local time, clear of
+# Joplin nightly backup — docs/roadmap.md Stage 4. 03:15 local time, clear of
 # Debian's cron.daily window. flock -n: skip this run rather than overlap
 # if a previous run is still uploading (e.g. slow network) — a skipped run
 # is caught by the healthchecks.io dead-man's-switch like any other missed
 # ping.
 15 3 * * * /usr/bin/flock -n /tmp/joplin-backup.lock /home/steven/workspace/my-note-app/scripts/backup.sh >> /home/steven/joplin-backup.log 2>&1
 
-# Joplin health monitoring — roadmap.md Stage 6. 03:45 local time, offset
+# Joplin health monitoring — docs/roadmap.md Stage 6. 03:45 local time, offset
 # from the backup run above so they don't compete for disk I/O. Same
 # flock -n skip-rather-than-overlap behavior, own lock file, own log.
 45 3 * * * /usr/bin/flock -n /tmp/joplin-monitor.lock /home/steven/workspace/my-note-app/scripts/monitor.sh >> /home/steven/joplin-monitor.log 2>&1
