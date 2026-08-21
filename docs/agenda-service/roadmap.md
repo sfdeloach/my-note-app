@@ -43,10 +43,23 @@ Pulled from the brief; see `initial-prompt.md` for full reasoning:
   title/Metadata disagreement) is an error scoped to that note while
   everything else keeps serving.
 
-### Correction to the brief
+### Corrections to the brief
 
 The brief's HTTP section refers to "the existing `docker-compose.yml`." The
 actual file in this repo is **`compose.yml`**. Use the real name in Stage 6.
+
+Confirmed via live DB recon in Stage 2:
+- **`items` has no `title` or `deleted_time` column.** Both — along with
+  `body` and `markup_language` — live only inside the JSON envelope in the
+  `content` bytea column, never as row-level columns. The row-level `name`
+  column is a synthetic filename (`{jop_id}.md`), not the title. This
+  means note listing/sorting can't be done with plain SQL on `title`; the
+  `reader` package decodes+JSON-parses `content` for every candidate row.
+- **Soft-deleted rows are retained**, marked by a nonzero
+  `content.deleted_time` inside the envelope (confirmed via a live
+  example) — not a row-level flag.
+- **`owner_id` is single-valued**, as expected — confirmed via
+  `SELECT DISTINCT owner_id FROM items`.
 
 ### Shared building blocks — build once, reuse
 
@@ -111,7 +124,7 @@ this before continuing** (brief's checkpoint 1).
 
 ---
 
-## Stage 2 — DB recon + `reader` package + DB role proposal (checkpoint 2) (not started)
+## Stage 2 — DB recon + `reader` package + DB role proposal (checkpoint 2) (done)
 
 **Goal**: resolve the two open unknowns against the live database, build
 the `reader` package against the confirmed schema, and propose the
@@ -327,9 +340,22 @@ month's meeting note renders correctly in all four views.
 
 ## Open items to track (not blocking any stage yet)
 
-- Confirm during Stage 2: soft-deleted row retention in `items`, and
-  `owner_id` cardinality (both flagged unverified in the brief).
+- ~~Confirm during Stage 2: soft-deleted row retention in `items`, and
+  `owner_id` cardinality~~ — resolved in Stage 2, see "Corrections to the
+  brief" below.
 - Implementation-level decisions the brief explicitly defers (Postgres
   driver choice, Go module path, HTTP router, template file layout, exact
   Dockerfile base image/tag) are each stage's own call when reached — not
-  resolved here.
+  resolved here. Stage 2 chose `github.com/jackc/pgx/v5` (native, not
+  `database/sql`) for the Postgres driver.
+- **None of the 34 real meeting notes currently comply with the h1/h2/
+  key-value authoring convention** — they predate it (legacy freeform
+  headers, markdown tables, a missing colon here and there). Confirmed via
+  live recon in Stage 2. This isn't a bug — the per-note-error design
+  exists for exactly this — but expect every real note to show a per-note
+  error in Stages 4–6's views until notes are authored (or rewritten) in
+  the new convention. Two titles also don't match the `YYYY-MM-DD <Type>
+  Meeting` pattern at all: `2025-11-08 Called Teleconference` and
+  `2025-09-16 Called Meeting/DZ Court`. "Template" and "Notes Converter
+  Prompt" (non-meeting scratch notes) also live inside the Session
+  Meetings notebook and will show the same title-pattern error.
