@@ -81,7 +81,7 @@ The brief lists 7 deliverables. Mapping, for tracking:
 
 ---
 
-## Stage 1 — Scaffolding + parser (checkpoint 1) (not started)
+## Stage 1 — Scaffolding + parser (checkpoint 1) (done)
 
 **Goal**: a standalone, hardened `parser` package that reproduces the
 brief's exact test fixture.
