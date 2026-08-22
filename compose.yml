@@ -1,7 +1,8 @@
-# No reverse proxy in front of joplin-server: WireGuard already encrypts
-# tunnel traffic, and the home LAN is fully trusted (no untrusted/guest
-# devices), so TLS termination and security headers have nothing to protect
-# against here. Revisit only if a second service is ever added to the Pi.
+# No reverse proxy in front of any service here: WireGuard already
+# encrypts tunnel traffic, and the home LAN is fully trusted (no
+# untrusted/guest devices), so TLS termination and security headers have
+# nothing to protect against. Reconfirmed when agenda-service (Stage 6)
+# became this stack's second service — same reasoning still applies.
 services:
   database:
     image: postgres:17.10-trixie
@@ -46,6 +47,27 @@ services:
       - MAILER_AUTH_PASSWORD=${MAILER_AUTH_PASSWORD}
       - MAILER_NOREPLY_NAME=${MAILER_NOREPLY_NAME}
       - MAILER_NOREPLY_EMAIL=${MAILER_NOREPLY_EMAIL}
+    networks:
+      - my-note-app-network
+
+  agenda-service:
+    build:
+      context: ./agenda-service
+    restart: unless-stopped
+    depends_on:
+      - database
+    ports:
+      - "8080:8080"
+    environment:
+      - AGENDA_DB_HOST=${AGENDA_DB_HOST}
+      - AGENDA_DB_PORT=${AGENDA_DB_PORT}
+      - AGENDA_DB_NAME=${AGENDA_DB_NAME}
+      - AGENDA_DB_USER=${AGENDA_DB_USER}
+      - AGENDA_DB_PASSWORD=${AGENDA_DB_PASSWORD}
+      - AGENDA_SETTINGS_PATH=${AGENDA_SETTINGS_PATH}
+      - AGENDA_LISTEN_ADDR=${AGENDA_LISTEN_ADDR}
+    volumes:
+      - ./agenda-service/config/settings.json:${AGENDA_SETTINGS_PATH}:ro
     networks:
       - my-note-app-network
 

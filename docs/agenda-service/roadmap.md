@@ -139,6 +139,69 @@ brief left open):
   legitimately has nothing under `# Absences`. Only a *name that doesn't
   match any elder* is a hard error, per the brief.
 
+Decided during implementation in Stage 6 (not corrections, just choices the
+brief left open):
+- **Entry point is `agenda-service/main.go` at the module root**, not a
+  `cmd/` subdirectory — this module only ever builds one binary, so the
+  extra nesting wasn't earning its keep.
+- **A new `server` package** holds routing, HTTP handlers, and the
+  note-listing template — kept separate from `views`, which is scoped to
+  the four print/screen views, not note listing. `main.go` stays pure
+  wiring: env vars → `pgxpool.Pool` → `reader.New` → one startup-only
+  `settings.Load` (to fail fast on a broken settings file, same as the
+  brief's fatal-at-startup rule) → `server.New` → `http.Server`.
+- **Router is stdlib `net/http`'s Go 1.22+ pattern-based `ServeMux`**
+  (`"GET /view"`-style patterns, `"GET /{$}"` to match `/` exactly rather
+  than as a catch-all). No router dependency added — `go.mod` had none,
+  and this matches the project's existing zero-dependency approach to
+  Markdown parsing.
+- **The note listing (`/` and `/archived`) is one handler parameterized by
+  `reader.Scope`**, rendering a small embedded `server/templates/list.tmpl`
+  (same `embed.FS` pattern as `views/render.go`). Each note's four view
+  links and three download links are precomputed in Go
+  (`noteViews`), not built inside the template, so URL-escaping the note
+  id happens in one place. A note with `Err` set renders as an inline
+  error message instead of links — as of Stage 6, this is every single
+  real note (see "Open items"), which the listing handles correctly by
+  construction rather than as a special case.
+- **Download filename convention**: `session-<view>-<date>.html` (e.g.
+  `session-agenda-2026-08-11.html`) for Agenda/Minutes/Action Items;
+  Red-Letter has no `FilenamePrefix` and `/download?view=redletter` is
+  rejected outright (400) rather than left to fail some other way.
+- **Every failure path renders into a `bytes.Buffer` before writing to the
+  `http.ResponseWriter`**, in both `handleList` and `handleView` — so a
+  render error partway through (a malformed note, Minutes' unmatched-name
+  hard error) still becomes a clean error response instead of a
+  half-written 200. Error responses are deliberately graduated: 400 for a
+  bad/unknown query param, 404 for `reader.ErrNoteNotFound`, 422 for a
+  per-note content problem (`*reader.NoteError`, or a `Build*Model`/
+  `Render*` failure) with a message naming the note and the problem, and
+  500 (generic body, real error logged server-side only) for anything
+  that might carry DB or filesystem detail.
+- **Dockerfile**: multi-stage, `golang:1.25.14-trixie` builder (matching
+  `go.mod`'s `go 1.25.0` and the project's Debian/trixie image family) →
+  `debian:trixie-slim` runtime (chosen over a distroless base — keeps a
+  shell for `docker exec -it` debugging, consistent with how the
+  `database` container is already worked with; the tradeoff is a larger
+  image and more attack surface than shell-less, acceptable given the
+  tunnel/LAN-only trust model). `CGO_ENABLED=0` static build (pgx is pure
+  Go), runs as an explicitly created non-root user. Verified locally:
+  image builds, container starts and connects to Postgres over the
+  compose network, and runs with a working shell as a non-root uid.
+- **`compose.yml` publishes one host port** (`8080:8080`, `AGENDA_LISTEN_ADDR`
+  internally `:8080`), the same shape as `joplin-server`'s `22300:22300` —
+  needed because WireGuard tunnels to the Pi's host, not into the Docker
+  bridge network, so a service with no published port would be
+  unreachable from outside the host entirely. The file's top-of-file "no
+  reverse proxy" comment was updated (not left stale): agenda-service
+  *is* the second service its old wording said to revisit for, and the
+  reasoning was reconfirmed, not reversed.
+- **All `AGENDA_*` config is pulled through `.env`/`.env.example`**, even
+  values effectively fixed by topology (`AGENDA_DB_HOST=database`,
+  `AGENDA_SETTINGS_PATH=/etc/agenda-service/settings.json`) — matches how
+  `joplin-server`'s own config is already 100% `.env`-sourced in this
+  file, rather than introducing a mixed hardcoded/templated convention.
+
 ### Shared building blocks — build once, reuse
 
 These span multiple stages. Build each the first time it's needed and reuse
@@ -359,7 +422,7 @@ under "Bank Authorization" with no visible item title or section heading.
 
 ---
 
-## Stage 6 — HTTP layer + Dockerfile + compose integration (checkpoint 3, cont'd) (not started)
+## Stage 6 — HTTP layer + Dockerfile + compose integration (checkpoint 3, cont'd) (done)
 
 **Goal**: a tiny, tunnel-only HTTP surface, containerized and wired into
 the existing stack.
@@ -387,6 +450,23 @@ alongside Joplin/Postgres; all four views reachable over the tunnel/LAN by
 note id; a bad/missing `id` or `view` param fails cleanly, not with a
 stack trace or a 500 that leaks DB detail; download filenames match the
 spec for the three print views.
+
+Confirmed live on the Pi: `docker compose up -d` (via `--build
+agenda-service`) started it cleanly alongside `database`/`joplin-server`
+(`docker compose ps` shows it `Up`, publishing `8080:8080`); `GET /` and
+`GET /archived` both return 200, with every one of the 36 current real
+notes showing as an inline error row (none are yet authored in the
+compliant convention — expected, see "Open items"); `GET /view` with a
+missing/unknown param returns 400, with a nonexistent id returns 404, and
+`GET /download?view=redletter` is rejected with 400; the `server` package's
+integration tests (gated on `AGENDA_TEST_DB_*`, same pattern as
+`reader/reader_test.go`) pass against the live database, including the
+per-note-error path against the same real bad-title note
+`reader/reader_test.go` already uses. **Not yet verified**: a full 200
+render of any of the four views against a real note, since no real note
+currently complies with the authoring convention (same gap
+`reader/reader_test.go`'s `TestGetNote` already documents) — add that
+check once a compliant note exists.
 
 ---
 

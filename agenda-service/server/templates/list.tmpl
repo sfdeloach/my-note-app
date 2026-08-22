@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{.Title}}</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 60rem;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        color: #222;
+      }
+
+      nav a {
+        margin-right: 1rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 0.5rem;
+        border-bottom: 1px solid #ccc;
+        vertical-align: top;
+      }
+
+      .error {
+        color: firebrick;
+      }
+
+      .views a {
+        margin-right: 0.75rem;
+        white-space: nowrap;
+      }
+
+      .views .download {
+        color: #666;
+        font-size: 0.85em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav>
+      <a href="/">Session Meetings</a>
+      <a href="/archived">Archived</a>
+    </nav>
+
+    <h1>{{.Title}}</h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Title</th>
+          <th>Views</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Notes}}
+        <tr>
+          <td>{{.Date}}</td>
+          <td>{{.Type}}</td>
+          <td>{{.Title}}</td>
+          <td class="views">
+            {{if .Err}}
+            <span class="error">{{.Err}}</span>
+            {{else}} {{range .Views}}
+            <a href="{{.ViewURL}}">{{.Label}}</a
+            >{{if .DownloadURL}} <a class="download" href="{{.DownloadURL}}"
+              >(download)</a
+            >{{end}} {{end}} {{end}}
+          </td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </body>
+</html>
