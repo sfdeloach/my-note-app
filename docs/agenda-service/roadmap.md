@@ -79,6 +79,36 @@ brief left open):
   *value* is deliberately left unrestricted (not locked to
   teaching/ruling) since no view reads it yet.
 
+Decided during implementation in Stage 4 (not corrections, just choices the
+brief left open):
+- **Metadata-section extraction lives in `views`, not `reader`.** The
+  brief's view signature is `(tree []*parser.Block, cfg settings.Settings)`
+  — views never receive the already-validated `reader.Note`, so they need
+  their own read of the `# Metadata` section's `date`/`time`/`location`/
+  `type` values. `reader/envelope.go`'s `findMetadata` does a similar walk
+  but only extracts `date`/`type` for the title cross-check and is
+  unexported; rather than export DB-package internals for a non-DB reason,
+  `views` has its own small unexported `extractMetadata`, reused as-is by
+  every later view that needs it.
+- **`churchName` is a private const in `agenda.go`** for now, not a shared
+  file — only Agenda uses it in Stage 4. Promote it to a shared location
+  when Stage 5's Action Items needs it too, per "build once, reuse the
+  first time a second consumer needs it."
+- **The shared print stylesheet takes `FontStack` as `template.CSS`, not
+  `string`.** `html/template`'s contextual CSS escaper mangles a plain
+  string's quotes/commas when interpolated inside `<style>`; `template.CSS`
+  is the documented escape hatch for a well-formed CSS fragment the code
+  itself controls.
+- **Agenda and Red-Letter's section/item walks are two small separate
+  functions** (`buildAgendaSections`, `buildRedLetterSections`), not one
+  generic walk — they produce different item shapes (`[]string` vs.
+  `[]RedLetterItem`), and a shared generic helper wasn't worth it for two
+  call sites.
+- **Bold-inline substitution uses `regexp.MustCompile(`\*\*(.+?)\*\*`)`**
+  (non-greedy, applied after `template.HTMLEscapeString`) rather than
+  manual delimiter-pair scanning — simpler, and naturally leaves any
+  unmatched `**` literal without special-casing it.
+
 ### Shared building blocks — build once, reuse
 
 These span multiple stages. Build each the first time it's needed and reuse
@@ -226,7 +256,7 @@ excluded).
 
 ---
 
-## Stage 4 — Structural views: Agenda + Red-Letter Agenda (not started)
+## Stage 4 — Structural views: Agenda + Red-Letter Agenda (done)
 
 **Goal**: the two "full skeleton" views, plus the shared building blocks
 they introduce (bold-inline renderer, print stylesheet).

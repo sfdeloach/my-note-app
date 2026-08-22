@@ -1,0 +1,51 @@
+{{/*
+  Shared print stylesheet for Agenda, Minutes, and Action Items (not
+  Red-Letter, which is screen-only and never printed). Only the rules
+  genuinely common across all three live here: the @page rule, the
+  screen-desk chrome, and the @media print reset. Font stacks are
+  deliberately not unified — the caller passes .FontStack (template.CSS) so
+  body{font-family} varies per view.
+*/}}
+{{define "printstyle"}}
+      @page {
+        size: letter;
+        /* 0.4in clears the unprintable hardware margin on most inkjets.
+           0.25in fits laser printers but risks clipping full-width rules
+           at the paper edge. */
+        margin: 0.4in;
+      }
+
+      /* Screen-only chrome: a gray desk so the page box is visible.
+         Undone in the print block below. */
+      html {
+        background: #e8e8e8;
+      }
+
+      body {
+        font-family: {{.FontStack}};
+        font-size: 11pt;
+        line-height: 1.35;
+        color: #000;
+        background: #fff;
+        width: 7.7in;
+        min-height: 10.2in;
+        margin: 0.4in auto;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
+      }
+
+      @media print {
+        html {
+          background: none;
+        }
+
+        /* Let the @page box define the width; an explicit width equal to
+           the printable area invites rounding overflow and a stray blank
+           page. */
+        body {
+          width: auto;
+          min-height: 0;
+          margin: 0;
+          box-shadow: none;
+        }
+      }
+{{end}}

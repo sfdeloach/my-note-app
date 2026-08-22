@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Red Letter Agenda</title>
+    <style>
+      body {
+        font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+      }
+      span.red-letter {
+        color: firebrick;
+      }
+      #copy-btn {
+        margin-top: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="copy-content">
+      <p>
+        <strong>{{.Type}} Meeting Agenda</strong>
+        <br />{{.MeetingDate}}, {{.Time}}
+        <br />{{.Location}}
+      </p>
+      {{range .Sections}}
+      <section>
+        <p><strong>{{.Heading}}</strong></p>
+        {{if .Ordered}}
+        <ol>
+          {{range .Items}}
+          <li>
+            {{.Title}} {{range .RedLetter}}{{.}}{{end}}
+          </li>
+          {{end}}
+        </ol>
+        {{else}}
+        <ul>
+          {{range .Items}}
+          <li>
+            {{.Title}} {{range .RedLetter}}{{.}}{{end}}
+          </li>
+          {{end}}
+        </ul>
+        {{end}}
+      </section>
+      {{end}}
+    </main>
+
+    <button id="copy-btn" type="button">Copy for email</button>
+
+    <script>
+      "use strict";
+      // The one explicit exception to "no client-side JavaScript" in the
+      // brief: a copy-to-clipboard button. #copy-content is read directly
+      // (not re-derived) so the copied fragment is exactly what's on the
+      // page, including each redLetter span's inline color.
+      document.getElementById("copy-btn").addEventListener("click", async () => {
+        const html = document.getElementById("copy-content").innerHTML;
+        const blob = new Blob([html], { type: "text/html" });
+        const item = new ClipboardItem({ "text/html": blob });
+        await navigator.clipboard.write([item]);
+      });
+    </script>
+  </body>
+</html>

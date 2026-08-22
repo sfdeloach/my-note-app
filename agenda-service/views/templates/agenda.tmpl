@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Session Meeting Agenda</title>
+    <style>
+      {{template "printstyle" .}}
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-size: 11pt;
+      }
+
+      .masthead {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+        background-color: #d0d0d0;
+        padding: 18px 6px 32px;
+        border-top: 1px solid #000;
+        border-bottom: 3px double #000;
+      }
+
+      .masthead .church {
+        font-size: 18pt;
+        font-weight: bold;
+      }
+
+      .masthead h1 {
+        font-size: 18pt;
+      }
+
+      .masthead .meeting-date {
+        font-size: 18pt;
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .roll-call {
+        display: flex;
+        gap: 1rem;
+        padding: 12px 24px;
+        border-bottom: 1px solid #000;
+      }
+
+      .roll-call h2 {
+        flex: 1;
+        font-weight: normal;
+      }
+
+      .roll-call ul {
+        flex: 4;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        column-gap: 1rem;
+      }
+
+      .roll-call li {
+        break-inside: avoid;
+      }
+
+      /* Checkbox drawn in CSS so it renders identically everywhere, rather
+         than relying on a glyph the serif face may not carry. */
+      .roll-call li::before {
+        content: "";
+        display: inline-block;
+        width: 0.5em;
+        height: 0.5em;
+        margin-right: 0.5em;
+        border: 1px solid #000;
+      }
+
+      .agenda-title {
+        background-color: #d0d0d0;
+        padding: 0.5rem;
+        border-bottom: 3px double #000;
+        font-size: 16pt;
+        font-weight: bold;
+      }
+
+      .agenda-body {
+        padding: 1rem 3rem;
+      }
+
+      .agenda-body h3 {
+        margin-top: 1rem;
+        break-after: avoid;
+      }
+
+      #agenda-sections h3:first-child {
+        margin-top: 0;
+      }
+
+      .agenda-body ol,
+      .agenda-body ul {
+        margin: 0;
+      }
+
+      .agenda-body li {
+        break-inside: avoid;
+      }
+
+      @media print {
+        /* Browsers drop background fills when printing unless told
+           otherwise. */
+        .masthead,
+        .agenda-title {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="masthead">
+      <div class="church">{{.Church}}</div>
+      <div>
+        <h1>Session Meeting Agenda</h1>
+        <p class="meeting-date">{{.MeetingDate}}</p>
+      </div>
+    </header>
+
+    <section class="roll-call">
+      <h2>Session Members:</h2>
+      <ul id="roll-call-list" style="column-count: {{.ElderColumns}}">
+        {{range .Elders}}
+        <li>{{.}}</li>
+        {{end}}
+      </ul>
+    </section>
+
+    <h2 class="agenda-title">Agenda</h2>
+
+    <div class="agenda-body">
+      <div id="agenda-sections">
+        {{range .Sections}}
+        <h3>{{.Heading}}</h3>
+        {{if .Ordered}}
+        <ol>
+          {{range .Items}}
+          <li>{{.}}</li>
+          {{end}}
+        </ol>
+        {{else}}
+        <ul>
+          {{range .Items}}
+          <li>{{.}}</li>
+          {{end}}
+        </ul>
+        {{end}} {{end}}
+      </div>
+    </div>
+  </body>
+</html>
