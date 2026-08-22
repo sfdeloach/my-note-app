@@ -61,6 +61,24 @@ Confirmed via live DB recon in Stage 2:
 - **`owner_id` is single-valued**, as expected — confirmed via
   `SELECT DISTINCT owner_id FROM items`.
 
+Decided during implementation in Stage 3 (not corrections, just choices the
+brief left open):
+- **Dates stay plain ISO (`YYYY-MM-DD`) strings throughout**, not
+  `time.Time` — matches `reader.Note.Date`'s existing convention, and the
+  fixed-width zero-padded format makes lexicographic string comparison
+  correct for the active-at-date logic. `time.Parse` is used exactly once,
+  inside `settings.Load`'s validation step, only to reject a
+  syntactically-valid-JSON-but-impossible date at startup.
+- **`Settings` is a plain value type**, not a pointer — unlike
+  `reader.Reader`, it holds no live resource (it's rebuilt from disk on
+  every call, never cached), matching the brief's `cfg settings.Settings`
+  by-value view signature.
+- **Validation beyond the brief's explicit text** (all fatal, at
+  `settings.Load`): `elderColumns` must be positive; each elder's
+  `firstName`/`lastName`/`elderClass` must be non-empty. `elderClass`'s
+  *value* is deliberately left unrestricted (not locked to
+  teaching/ruling) since no view reads it yet.
+
 ### Shared building blocks — build once, reuse
 
 These span multiple stages. Build each the first time it's needed and reuse
@@ -177,7 +195,7 @@ waits for Stage 6.
 
 ---
 
-## Stage 3 — Settings package (not started)
+## Stage 3 — Settings package (done)
 
 **Goal**: load and validate `settings.json`, and implement the elder
 roster logic every view depends on.
