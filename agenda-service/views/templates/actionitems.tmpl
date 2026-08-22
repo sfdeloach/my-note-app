@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Session Meeting Action Items</title>
+    <style>
+      {{template "printstyle" .}}
+
+      header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      p {
+        margin: 0 auto;
+      }
+
+      li {
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <p>{{.Church}} Session Meeting Action Items</p>
+      <p><strong> {{.MeetingDate}} </strong></p>
+    </header>
+
+    <ol>
+      {{range .Entries}}
+      <li>
+        <p>{{.Title}}</p>
+        {{range .Items}}
+        <p><strong> Action Item: </strong> {{.}}</p>
+        {{end}}
+      </li>
+      {{end}}
+    </ol>
+  </body>
+</html>

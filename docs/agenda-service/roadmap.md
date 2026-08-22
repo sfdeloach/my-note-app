@@ -109,6 +109,36 @@ brief left open):
   manual delimiter-pair scanning — simpler, and naturally leaves any
   unmatched `**` literal without special-casing it.
 
+Decided during implementation in Stage 5 (not corrections, just choices the
+brief left open):
+- **The entry-extraction walk is its own small function per view**
+  (`buildMinutesEntries`, `buildActionItemEntries`), not a variant of
+  `buildAgendaSections`/`buildRedLetterSections`. Those two filter by
+  *item presence* and always surface a heading/title; Minutes' and Action
+  Items' walks filter by *descendant key* and Minutes never surfaces a
+  heading or item title at all — different enough shapes that forcing a
+  shared generic would cost more than two small functions, consistent with
+  Stage 4's same call on Agenda vs. Red-Letter.
+- **Present/Absent are pre-joined `string` fields**, not `[]string` —
+  unlike `AgendaModel.Elders` (rendered as a `<ul>`, one `<li>` per name),
+  Minutes' rosters render as a single comma-separated run of text inside
+  one `<p>`, so `strings.Join` in `BuildMinutesModel` is simpler than
+  teaching the template to join. `Absent` is the literal string `"None"`
+  when nobody's absent, matching the appendix wording directly.
+- **Absent-elder exclusion from Present uses a `FirstName+"\x00"+LastName`
+  map key, not `settings.Elder` struct equality** — `Elder.RemovedAt` is a
+  `*string`, so two independently-obtained copies of the same elder (one
+  from `ActiveElders`, one matched off the `# Absences` section) aren't
+  `==`-comparable even when they represent the same person.
+- **`minutesActionItemsFontStack` lives in `minutes.go`**, reused as-is by
+  `actionitems.go` — the two views share the identical Cambria stack (per
+  appendix 7/8), so it's declared once where Minutes needed it first and
+  referenced, not redeclared, by Action Items.
+- **No `Absences` section in the note is not an error** — `absentElders`
+  returns `(nil, nil)` rather than failing, since an all-hands meeting
+  legitimately has nothing under `# Absences`. Only a *name that doesn't
+  match any elder* is a hard error, per the brief.
+
 ### Shared building blocks — build once, reuse
 
 These span multiple stages. Build each the first time it's needed and reuse
@@ -292,7 +322,7 @@ section (hypothetically) is omitted entirely in both.
 
 ---
 
-## Stage 5 — Extractive views: Minutes + Action Items (not started)
+## Stage 5 — Extractive views: Minutes + Action Items (done)
 
 **Goal**: the two "walk and extract" views, reusing Stage 4's shared
 building blocks.

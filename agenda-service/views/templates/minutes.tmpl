@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Session Meeting Minutes</title>
+    <style>
+      {{template "printstyle" .}}
+
+      header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr;
+        margin-bottom: 2rem;
+      }
+
+      header h1,
+      h2,
+      h3 {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div>
+        <h2>{{.Church}}</h2>
+      </div>
+      <div>
+        <h2>Session Meeting Minutes</h2>
+        <h2>{{.MeetingDate}}</h2>
+      </div>
+    </header>
+
+    <p>
+      The Saint Andrew&rsquo;s Session held a
+      <strong>{{.TypeLower}} meeting</strong> in {{.Location}}. The meeting
+      was called to order at {{.Time}}.
+    </p>
+
+    <p>
+      <strong> Session Members Present: </strong>
+      {{.Present}}
+    </p>
+
+    <p>
+      <strong> Session Members Absent: </strong> {{.Absent}}
+    </p>
+
+    {{range .Entries}} {{if .Motion}}
+    <p><strong>Motion</strong> {{.Value}}</p>
+    {{else}}
+    <p>{{.Value}}</p>
+    {{end}} {{end}}
+  </body>
+</html>
