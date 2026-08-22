@@ -5,10 +5,11 @@ notes, running as Docker Compose services (Joplin Server + Postgres) on a
 Raspberry Pi 5 (4GB RAM, 320GB USB-attached spinning HDD, Debian). Reachable only via a WireGuard
 tunnel or trusted home LAN — no public inbound exposure.
 
-There's no application code here to build/lint/test in the traditional
-sense; the "work" in this repo is Docker Compose config, `.env` secrets
-management, and ongoing maintenance — deliberate image-version bumps
-(`UPDATING.md`), backups, monitoring, and the quarterly restore test.
+Most of this repo is Docker Compose config, `.env` secrets management, and
+ongoing maintenance — deliberate image-version bumps (`UPDATING.md`),
+backups, monitoring, and the quarterly restore test. The one exception is
+`agenda-service/`, a small Go application (see below) — everything else
+still has no build/lint/test step in the traditional sense.
 
 ## Project status
 
@@ -19,6 +20,17 @@ are done or deliberately dropped. `docs/roadmap.md` has the full
 stage-by-stage history; `docs/conversations/` has the numbered session log.
 Both are historical reference only — not loaded automatically, read on
 demand if past reasoning is needed.
+
+**Agenda Service** (`agenda-service/`) is a separate, also-complete
+sub-project: a Go HTTP service that renders four views (Agenda, Red-Letter
+Agenda, Minutes, Action Items) directly from Session Meeting notes in the
+Joplin database, read-only, no Data API involved. All 7 stages of its own
+roadmap (`docs/agenda-service/roadmap.md`) are done, and it's live-deployed
+on the Pi as a `compose.yml` service. `agenda-service/README.md` covers the
+day-to-day: the note-authoring convention and how to add a new view. The
+roadmap and `docs/agenda-service/initial-prompt.md` (the original brief)
+hold the full design history, same historical-reference status as the
+top-level roadmap above.
 
 ## Architecture decisions already made
 
@@ -55,12 +67,12 @@ a placeholder, not in `.env`.
 ## Conversation log
 
 `docs/conversations/` holds one numbered file per planning/work session
-(`00-initial-prompt.md` is the first, `13-...` is the most recent — the
-roadmap-closeout entries). This is the durable record of project history
-and decisions — at the end of a session with meaningful discussion or
-decisions, add the next numbered file (`14-...`, etc.) summarizing what was
-discussed/decided/done. Expect this to happen less often now that the
-project is in maintenance mode.
+(`00-initial-prompt.md` is the first; `17-...` is the most recent as of this
+writing — the Agenda Service roadmap-closeout entries). This is the durable
+record of project history and decisions — at the end of a session with
+meaningful discussion or decisions, add the next numbered file summarizing
+what was discussed/decided/done. Expect this to happen less often now that
+both the top-level project and Agenda Service are in maintenance mode.
 
 ## Communication style
 
@@ -76,4 +88,15 @@ docker compose up -d              # start the stack
 docker compose ps                 # check container/health status
 docker compose logs -f joplin-server
 docker exec -it my-note-app-database-1 pg_dump -U joplin joplin > backup.sql
+```
+
+Agenda Service (see `agenda-service/README.md` for the full authoring/dev
+guide):
+
+```
+docker compose up -d --build agenda-service   # rebuild + start after a code change
+docker compose logs -f agenda-service
+go build ./agenda-service/...                 # from repo root
+go test ./agenda-service/...                  # unit tests; DB-backed tests
+                                               # skip cleanly without AGENDA_TEST_DB_*
 ```

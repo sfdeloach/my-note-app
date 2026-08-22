@@ -20,6 +20,12 @@ const (
 	realBadTitleNote1 = "2025-11-08 Called Teleconference"
 	// A real note whose title doesn't end in "Meeting" as its final word.
 	realBadTitleNote2 = "2025-09-16 Called Meeting/DZ Court"
+
+	// The first real note authored in the compliant convention, converted
+	// 2026-08-22 (Stage 7). Used as the GetNote success-path fixture.
+	realGoodNoteTitle = "2026-08-11 Stated Meeting"
+	realGoodNoteDate  = "2026-08-11"
+	realGoodNoteType  = "Stated"
 )
 
 // testReader builds a Reader against a live Postgres instance using
@@ -114,28 +120,25 @@ func TestListNotes_Archived(t *testing.T) {
 func TestGetNote(t *testing.T) {
 	r := testReader(t)
 
-	// As of 2026-08-21 none of the real notes yet comply with the
-	// authoring convention this service introduces (they predate it —
-	// legacy headers, tables, missing colons), so there is currently no
-	// real note to use as a GetNote success-path fixture. That path is
-	// instead covered against the brief's own reference example in
-	// envelope_test.go (TestFindMetadata_ExampleNote, TestParseTitle),
-	// which is what a compliant note is defined to look like. Once a
-	// note is authored in the new convention, a "known-good note" case
-	// should be added here.
 	notes, err := r.ListNotes(context.Background(), Current)
 	if err != nil {
 		t.Fatalf("ListNotes(Current): %v", err)
 	}
 
-	var badTitleID string
+	var badTitleID, goodID string
 	for _, n := range notes {
 		if n.Title == realBadTitleNote1 {
 			badTitleID = n.ID
 		}
+		if n.Title == realGoodNoteTitle {
+			goodID = n.ID
+		}
 	}
 	if badTitleID == "" {
 		t.Fatalf("expected to find %q to test the per-note error path", realBadTitleNote1)
+	}
+	if goodID == "" {
+		t.Fatalf("expected to find %q to test the GetNote success path", realGoodNoteTitle)
 	}
 
 	t.Run("notebook id, not a note", func(t *testing.T) {
@@ -157,6 +160,25 @@ func TestGetNote(t *testing.T) {
 		var noteErr *NoteError
 		if !errors.As(err, &noteErr) {
 			t.Errorf("GetNote(%q) = %v, want a *NoteError", badTitleID, err)
+		}
+	})
+
+	t.Run("real note authored in the compliant convention", func(t *testing.T) {
+		nb, err := r.GetNote(context.Background(), goodID)
+		if err != nil {
+			t.Fatalf("GetNote(%q) = %v, want no error", goodID, err)
+		}
+		if nb.Title != realGoodNoteTitle {
+			t.Errorf("Title = %q, want %q", nb.Title, realGoodNoteTitle)
+		}
+		if nb.Date != realGoodNoteDate {
+			t.Errorf("Date = %q, want %q", nb.Date, realGoodNoteDate)
+		}
+		if nb.Type != realGoodNoteType {
+			t.Errorf("Type = %q, want %q", nb.Type, realGoodNoteType)
+		}
+		if nb.Body == "" {
+			t.Error("Body is empty, want the note's Markdown body")
 		}
 	})
 }

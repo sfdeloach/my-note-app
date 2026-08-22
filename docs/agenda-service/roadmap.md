@@ -470,7 +470,7 @@ check once a compliant note exists.
 
 ---
 
-## Stage 7 — Docs & wrap-up (not started)
+## Stage 7 — Docs & wrap-up (done)
 
 **Goal**: close the loop on the project's own documentation conventions
 now that this repo has app code, not just Compose/maintenance config.
@@ -494,6 +494,28 @@ reflect the shipped state; `agenda-service/README.md` alone is enough to
 remind a future self how to author a compliant master note; a real
 month's meeting note renders correctly in all four views.
 
+Confirmed: the user converted a real note, **"2026-08-11 Stated Meeting"**
+(id `8681273fdeb04c2aa65e5454fd057db2`), into the compliant convention —
+the first of the 34+ real notes to comply. A live smoke test against the
+already-running Pi deployment confirmed all four views render `200` with
+correct content (Agenda masthead; Red-Letter's inlined
+`style="color: firebrick;"` span with no `<style>` block; Minutes'
+Present/Absent rosters and a Motion; an Action Item entry) and no
+error/panic/500 text. Download filenames matched spec
+(`session-agenda-2026-08-11.html`, `session-minutes-2026-08-11.html`,
+`session-actionitems-2026-08-11.html`); `/download?view=redletter`
+correctly rejected with `400`. `agenda-service/README.md` was written
+(authoring convention, add-a-view guide, build/run/test); `CLAUDE.md` and
+`UPDATING.md` updated; `reader/reader_test.go`'s `TestGetNote` gained a
+known-good success-path case against this same note, closing its
+standing 2026-08-21 TODO — `go build`, `go vet`, and `go test ./...`
+(including the DB-backed integration tests, run in a container on the
+Compose network against the live database) all pass.
+
+**All 7 stages of the Agenda Service roadmap are now done. The service is
+live-deployed** on the Pi (`docker compose ps` shows it `Up`, publishing
+`8080:8080`) — not just ready for deployment.
+
 ---
 
 ## Open items to track (not blocking any stage yet)
@@ -506,14 +528,17 @@ month's meeting note renders correctly in all four views.
   Dockerfile base image/tag) are each stage's own call when reached — not
   resolved here. Stage 2 chose `github.com/jackc/pgx/v5` (native, not
   `database/sql`) for the Postgres driver.
-- **None of the 34 real meeting notes currently comply with the h1/h2/
-  key-value authoring convention** — they predate it (legacy freeform
-  headers, markdown tables, a missing colon here and there). Confirmed via
+- **As of Stage 7, one of the 34+ real meeting notes complies with the
+  h1/h2/key-value authoring convention**: "2026-08-11 Stated Meeting",
+  converted by the user and used as the real-note smoke-test fixture (see
+  Stage 7's Verify block) and as `reader_test.go`'s `TestGetNote`
+  known-good case. The rest still predate the convention (legacy freeform
+  headers, markdown tables, a missing colon here and there) — confirmed via
   live recon in Stage 2. This isn't a bug — the per-note-error design
-  exists for exactly this — but expect every real note to show a per-note
-  error in Stages 4–6's views until notes are authored (or rewritten) in
-  the new convention. Two titles also don't match the `YYYY-MM-DD <Type>
-  Meeting` pattern at all: `2025-11-08 Called Teleconference` and
-  `2025-09-16 Called Meeting/DZ Court`. "Template" and "Notes Converter
-  Prompt" (non-meeting scratch notes) also live inside the Session
-  Meetings notebook and will show the same title-pattern error.
+  exists for exactly this — and isn't blocking: the feature is code-complete
+  and deployed. Remaining real notes can be converted opportunistically.
+  Two titles also don't match the `YYYY-MM-DD <Type> Meeting` pattern at
+  all: `2025-11-08 Called Teleconference` and `2025-09-16 Called Meeting/DZ
+  Court`. "Template" and "Notes Converter Prompt" (non-meeting scratch
+  notes) also live inside the Session Meetings notebook and will show the
+  same title-pattern error.

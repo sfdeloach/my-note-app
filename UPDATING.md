@@ -43,8 +43,13 @@ schedule; treat "it's been a while" or a security advisory as the trigger).
    docker compose ps          # confirm both services healthy
    ```
    Spot-check the app (log in, open a note, confirm sync still works from
-   a client). Check `~/joplin-backup.log` and `~/joplin-monitor.log` after
-   the next cron cycle to confirm nothing regressed.
+   a client). Also spot-check `agenda-service`: hit `/` over the tunnel/LAN
+   and confirm a real note's four views (Agenda, Red-Letter, Minutes,
+   Action Items) still render `200` without error — `agenda-service` reads
+   the `items` table and its JSON content envelope directly (no Data API
+   insulates it), so a Joplin bump changing either could break it silently.
+   Check `~/joplin-backup.log` and `~/joplin-monitor.log` after the next
+   cron cycle to confirm nothing regressed.
 
 6. **Postgres major bump (dump/reload required):**
    - Run `./scripts/restore-test.sh up` first, as a baseline confirming the
