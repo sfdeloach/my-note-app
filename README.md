@@ -135,9 +135,10 @@ port 22300, which production already holds. Keep its image tags in sync with
 
   ```
   /home/steven/joplin-backup.log /home/steven/joplin-monitor.log {
-      weekly
-      rotate 8
+      monthly
+      rotate 3
       compress
+      dateext
       missingok
       notifempty
   }
@@ -148,8 +149,13 @@ port 22300, which production already holds. Keep its image tags in sync with
   fresh and closes it when the script exits, so after `logrotate` renames
   the file out from under it, the next night's cron run just creates a new
   one at that path — the same thing that happens if the file is deleted by
-  hand. Keeps roughly 2 months of compressed history (8 weekly rotations)
-  before the oldest is dropped.
+  hand. Keeps roughly four months of history — the current month in the
+  live log plus three monthly `.gz` archives — before the oldest is
+  dropped. The live log now spans a month rather than a week, so recent
+  entries stay greppable without `zgrep`; these logs are only a few lines
+  per nightly run, so a month uncompressed costs nothing on disk.
+  `dateext` gives the archives datestamped names
+  (`joplin-backup.log-20260801.gz`) instead of `.1`, `.2`, ….
 
 ## Updates
 
