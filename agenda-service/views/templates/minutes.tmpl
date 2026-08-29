@@ -7,7 +7,8 @@
     <style>
       {{template "printstyle" .}}
 
-      header {
+      header,
+      footer {
         display: grid;
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr;
@@ -54,5 +55,18 @@
     {{else}}
     <p>{{.Value}}</p>
     {{end}} {{end}}
+
+    <footer>
+      <div>
+        <p>Attested by Clerk {{.Clerk}}</p>
+        <p>Signature: ___________________________</p>
+        <p>Date: _______________</p>
+      </div>
+      <div>
+        <p>Attested by Moderator {{.Moderator}}</p>
+        <p>Signature: ___________________________</p>
+        <p>Date: _______________</p>
+      </div>
+    </footer>
   </body>
 </html>

@@ -36,6 +36,16 @@ Full JSON example:
             "key": "type",
             "content": "Stated",
             "children": null
+          },
+          {
+            "key": "clerk",
+            "content": "RE Kevin Kennedy",
+            "children": null
+          },
+          {
+            "key": "moderator",
+            "content": "TE Kevin Struyk",
+            "children": null
           }
         ]
       }

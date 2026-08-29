@@ -54,6 +54,8 @@ const emptySectionFixture = `# Metadata
 - **time:** 5:00 PM
 - **location:** Classroom 7/8
 - **type:** Stated
+- **clerk:** RE Kevin Kennedy
+- **moderator:** TE Kevin Struyk
 
 # Notes
 

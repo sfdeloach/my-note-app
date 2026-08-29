@@ -32,6 +32,8 @@ type MinutesModel struct {
 	Present     string // comma-joined names, last-then-first
 	Absent      string // comma-joined names, last-then-first, or "None"
 	Entries     []MinutesEntry
+	Clerk       string // free text, rendered as-is in the attestation footer
+	Moderator   string // free text, rendered as-is in the attestation footer
 	FontStack   template.CSS
 }
 
@@ -63,6 +65,8 @@ func BuildMinutesModel(tree []*parser.Block, cfg settings.Settings) (MinutesMode
 		Present:     joinElderNames(present),
 		Absent:      joinAbsentNames(absent),
 		Entries:     buildMinutesEntries(tree),
+		Clerk:       m.Clerk,
+		Moderator:   m.Moderator,
 		FontStack:   minutesActionItemsFontStack,
 	}, nil
 }

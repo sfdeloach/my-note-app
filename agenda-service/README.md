@@ -31,7 +31,7 @@ top-level `# ` heading. The current body sections (matching
 `# Reports & Updates`, `# New Business`, and `# Reminders`.
 
 **Metadata section**: exactly one `## ` heading (its title is ignored)
-containing four key-values:
+containing six key-values:
 
 ```markdown
 # Metadata
@@ -42,11 +42,17 @@ containing four key-values:
 - **time:** 5:00 PM
 - **location:** Classroom 7/8
 - **type:** Stated
+- **clerk:** RE Kevin Kennedy
+- **moderator:** TE Kevin Struyk
 ```
 
 `date` is ISO `YYYY-MM-DD`; `type` must match the title's `<Type>` exactly.
-Metadata is never rendered as a body section — its values populate every
-view's head matter.
+`clerk` and `moderator` are free text, rendered as-is (like `location`) —
+no roster lookup, no format enforcement on the `RE`/`TE` prefix. All six
+keys are required: a note missing any of them fails to parse with an error
+naming the missing key. Metadata is never rendered as a body section — its
+values populate every view's head matter, and `clerk`/`moderator` also
+feed the Minutes view's attestation footer.
 
 **Sections and items**: within a body section, each agenda item/entry is a
 `## ` heading. Key-value data nested under an item uses:

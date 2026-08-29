@@ -29,6 +29,12 @@ func TestBuildMinutesModel_ExampleNote(t *testing.T) {
 	if model.Time != "5:00 PM" {
 		t.Errorf("Time = %q, want %q", model.Time, "5:00 PM")
 	}
+	if model.Clerk != "RE Kevin Kennedy" {
+		t.Errorf("Clerk = %q, want %q", model.Clerk, "RE Kevin Kennedy")
+	}
+	if model.Moderator != "TE Kevin Struyk" {
+		t.Errorf("Moderator = %q, want %q", model.Moderator, "TE Kevin Struyk")
+	}
 
 	wantAbsent := "Dave Murray, Burk Parsons"
 	if model.Absent != wantAbsent {
@@ -73,6 +79,8 @@ func TestBuildMinutesModel_MisspelledAbsenceIsHardError(t *testing.T) {
 - **time:** 5:00 PM
 - **location:** Classroom 7/8
 - **type:** Stated
+- **clerk:** RE Kevin Kennedy
+- **moderator:** TE Kevin Struyk
 
 # Absences
 
@@ -99,6 +107,8 @@ func TestBuildMinutesModel_NoAbsencesSectionMeansNobodyAbsent(t *testing.T) {
 - **time:** 5:00 PM
 - **location:** Classroom 7/8
 - **type:** Stated
+- **clerk:** RE Kevin Kennedy
+- **moderator:** TE Kevin Struyk
 `
 	tree := parseOrFatal(t, body)
 	cfg := loadSeededSettings(t)
@@ -126,6 +136,9 @@ func TestRenderMinutes_ExampleNote(t *testing.T) {
 		"Session Meeting Minutes",
 		"Dave Murray, Burk Parsons",
 		"<strong>Motion</strong>",
+		"<footer>",
+		"Attested by Clerk RE Kevin Kennedy",
+		"Attested by Moderator TE Kevin Struyk",
 	} {
 		if !strings.Contains(out, want) {
 			t.Errorf("rendered output missing %q", want)

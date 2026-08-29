@@ -4,7 +4,7 @@
 > key-value convention: `- **key:** value`
 > regex for key-values: `^- \*\*([A-Za-z]+):\*\* (\S.*)$`
 > Values are single-line. A key line with no value is skipped with a warning.
-> The `# Metadata` section holds exactly one h2 — its title is ignored — containing four key-value pairs: date (ISO 8601 YYYY-MM-DD format), time, location, and type (all strings). This section is never rendered as a body section; its values populate the head matter of each view.
+> The `# Metadata` section holds exactly one h2 — its title is ignored — containing six key-value pairs: date (ISO 8601 YYYY-MM-DD format), time, location, type, clerk, and moderator (all strings). This section is never rendered as a body section; its values populate the head matter of each view. clerk and moderator are free text, used only by the Minutes view's attestation footer.
 
 # Metadata
 
@@ -14,6 +14,8 @@
 - **time:** 5:00 PM
 - **location:** Classroom 7/8
 - **type:** Stated
+- **clerk:** RE Kevin Kennedy
+- **moderator:** TE Kevin Struyk
 
 # Notes
 
