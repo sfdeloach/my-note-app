@@ -12,8 +12,8 @@ import (
 // duplicated here, so the parser's test can never drift from the brief's
 // documented example.
 const (
-	exampleNotePath   = "../../docs/agenda-service/appendix/1-example-note.md"
-	scannerResultPath = "../../docs/agenda-service/appendix/3-scanner-result.md"
+	exampleNotePath   = "../../docs/agenda-service/appendix/01-example-note.md"
+	scannerResultPath = "../../docs/agenda-service/appendix/03-scanner-result.md"
 )
 
 func TestParseExampleNote(t *testing.T) {

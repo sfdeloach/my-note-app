@@ -25,12 +25,17 @@ demand if past reasoning is needed.
 sub-project: a Go HTTP service that renders four views (Agenda, Red-Letter
 Agenda, Minutes, Action Items) directly from Session Meeting notes in the
 Joplin database, read-only, no Data API involved. All 7 stages of its own
-roadmap (`docs/agenda-service/roadmap.md`) are done, and it's live-deployed
-on the Pi as a `compose.yml` service. `agenda-service/README.md` covers the
-day-to-day: the note-authoring convention and how to add a new view. The
-roadmap and `docs/agenda-service/initial-prompt.md` (the original brief)
-hold the full design history, same historical-reference status as the
-top-level roadmap above.
+roadmap (`docs/agenda-service/01-initial-build/roadmap.md`) are done, and
+it's live-deployed on the Pi as a `compose.yml` service.
+`agenda-service/README.md` covers the day-to-day: the note-authoring
+convention and how to add a new view. The roadmap and
+`docs/agenda-service/01-initial-build/prompt.md` (the original brief) hold
+the full design history, same historical-reference status as the top-level
+roadmap above. `docs/agenda-service/` is organized one numbered
+`NN-<feature>/` folder per feature effort (`01-initial-build/` is the
+first), each holding the expert prompt that specified it plus any roadmap;
+`docs/agenda-service/appendix/` is a shared reference pool across them. See
+`docs/agenda-service/README.md` for that convention.
 
 ## Architecture decisions already made
 

@@ -11,7 +11,7 @@ import (
 // exampleNotePath is the same fixture the parser package tests against,
 // reused here so findMetadata's happy path is checked against a real
 // authored note rather than a hand-built tree.
-const exampleNotePath = "../../docs/agenda-service/appendix/1-example-note.md"
+const exampleNotePath = "../../docs/agenda-service/appendix/01-example-note.md"
 
 func TestParseTitle(t *testing.T) {
 	cases := []struct {

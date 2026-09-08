@@ -1,9 +1,9 @@
 # Roadmap: Agenda Service
 
 This roadmap breaks the Agenda Service build brief
-(`docs/agenda-service/initial-prompt.md`, plus the appendices in
-`docs/agenda-service/appendix/`) into stages sized to complete one at a
-time in future conversations. Each stage has a **Goal**, a rough list of
+(`docs/agenda-service/01-initial-build/prompt.md`, plus the shared
+reference pool in `docs/agenda-service/appendix/`) into stages sized to
+complete one at a time in future conversations. Each stage has a **Goal**, a rough list of
 **Tasks**, and a **Verify** step to confirm it worked before moving on —
 same format as the top-level `docs/roadmap.md`.
 
@@ -17,7 +17,7 @@ roadmap's own sequencing, not the brief's.
 
 ## Decisions already made (context for all stages — don't re-litigate)
 
-Pulled from the brief; see `initial-prompt.md` for full reasoning:
+Pulled from the brief; see `prompt.md` for full reasoning:
 
 - **Direct Postgres, read-only, always.** No Data API exists on Joplin
   Server, so this is the real path, not a shortcut. No headless Joplin
@@ -244,7 +244,7 @@ brief's exact test fixture.
 - Create the `agenda-service/` Go module and the package layout
   (`reader/`, `parser/`, `settings/`, `views/`, plus a `cmd/` or root
   `main.go` for later).
-- Port the scanner prototype (`appendix/2-scanner.md`) into
+- Port the scanner prototype (`docs/agenda-service/appendix/02-scanner.md`) into
   `package parser`: keep the depth/stack discipline, the skip-level guard,
   and the `Block{Key, Content, Children}` shape.
 - Change the signature to accept the body string (or `io.Reader`) and
@@ -256,8 +256,9 @@ brief's exact test fixture.
 - Preserve everything else: blockquotes and blank lines skipped; anything
   else unrecognized is still a parse error, with note + line number.
 
-**Verify**: running the parser against `appendix/1-example-note.md`
-reproduces `appendix/3-scanner-result.md`'s tree exactly, and produces
+**Verify**: running the parser against
+`docs/agenda-service/appendix/01-example-note.md` reproduces
+`docs/agenda-service/appendix/03-scanner-result.md`'s tree exactly, and produces
 exactly 3 warnings (for the valueless `motion`/`comments`/`actionItem`
 lines under "Minister Resolution") — assert on key names and warning
 count, not exact line numbers, per the fixture's own note. **Stop and show
@@ -340,7 +341,7 @@ roster logic every view depends on.
 - `elderClass` is parsed/stored but not read by any view — don't wire it
   anywhere yet.
 
-**Verify**: `settings.json` seeded from `appendix/4-settings-and-data.md`
+**Verify**: `settings.json` seeded from `docs/agenda-service/appendix/04-settings-and-data.md`
 loads cleanly; a deliberately malformed JSON file produces the clear
 per-request error page, not a crash or a stale render; elder
 active/inactive at `2026-08-11` matches the brief's stated 18-active
@@ -361,13 +362,13 @@ they introduce (bold-inline renderer, print stylesheet).
 - Build the shared section/item-walk logic: skip Metadata (never a body
   section), omit empty sections entirely (heading and all), render each
   h1's h2 items as `<ol>`/`<ul>` per `listType`.
-- **Agenda** (`appendix/5-printed-agenda.md` is normative for CSS/DOM,
+- **Agenda** (`docs/agenda-service/appendix/05-printed-agenda.md` is normative for CSS/DOM,
   print-only, 8.5×11): masthead (church name left; "Session Meeting
   Agenda" + date right; `type` unused); roll-call band of elders active at
   the meeting date, sorted last-then-first, in `elderColumns` CSS columns
   with CSS-drawn checkboxes; body sections with item titles only — no
   key-values render. Introduce the shared print stylesheet here.
-- **Red-Letter Agenda** (`appendix/6-red-letter-agenda.md`, screen-only,
+- **Red-Letter Agenda** (`docs/agenda-service/appendix/06-red-letter-agenda.md`, screen-only,
   **never printed**, independent template — not a subclass of Agenda): head
   matter is `{Type} Meeting Agenda` (type cased as authored) + date/time +
   location, no church name; each item's `redLetter` value(s) render after
@@ -394,7 +395,7 @@ building blocks.
 - Build the shared item-extraction walk: collect, in document order, items
   carrying a target key (or keys); items with none are omitted; section
   headers and h2 item titles never surface in either view.
-- **Minutes** (`appendix/7-meeting-minutes.md`, print, shares Stage 4's
+- **Minutes** (`docs/agenda-service/appendix/07-meeting-minutes.md`, print, shares Stage 4's
   print stylesheet, Cambria font stack): head matter (church name left,
   "Session Meeting Minutes" + date right); preamble assembled from
   Metadata (`type` lowercased, `location`, `time`); Present/Absent rosters
@@ -406,7 +407,7 @@ building blocks.
   and/or `comments`: `motion` → `<p><strong>Motion</strong> {value}</p>`
   (repeats all render), `comments` → `<p>{value}</p>`. The bank motion's
   `**REMOVE**`/`**ADD**` runs through Stage 4's bold-inline renderer.
-- **Action Items** (`appendix/8-action-items-report.md`, print, shares the
+- **Action Items** (`docs/agenda-service/appendix/08-action-items-report.md`, print, shares the
   print stylesheet, Cambria font stack): centered head matter ("Saint
   Andrew's Chapel Session Meeting Action Items" + bold date, `type`
   unused); flat `<ol>`, one `<li>` per h2 item carrying at least one

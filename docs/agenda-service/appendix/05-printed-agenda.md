@@ -6,7 +6,7 @@ This template is printed and handed to all elders at the meeting: standard 8-1/2
 
 Notes on the prototype data below:
 
-- The `elders` array duplicates `4-settings-and-data.md`, which is authoritative. It shows the 18 elders active at 2026-08-11.
+- The `elders` array duplicates `04-settings-and-data.md`, which is authoritative. It shows the 18 elders active at 2026-08-11.
 - `ordered: true/false` stands in for `settings.listType`, which in the service is keyed by the exact h1 heading and defaults to `unordered`.
 - The prototype's `isVisible` flags and nested sub-item lists have been removed. The Markdown convention can express neither, and both are out of scope.
 - The `@page` rule, the screen-desk chrome, and the `@media print` block are shared with the Minutes and Action Items views. The font stack is **not** shared — this view uses Times New Roman, the other two use Cambria, and that difference is intentional.

@@ -6,7 +6,7 @@ I run a self-hosted Joplin stack (Joplin Server + Postgres) via Docker Compose o
 
 The master note is also my private copy: anything I want kept to myself I write in a **blockquote**, which the parser ignores entirely. So there is no separate "private" view — the master in Joplin *is* it, and nothing private ever reaches a rendered output.
 
-Background on the workflow this replaces is in `docs/agenda-service/appendix/0-overview.md`. That file is **non-normative history** — where it disagrees with this brief, this brief wins.
+Background on the workflow this replaces is in `docs/agenda-service/appendix/00-overview.md`. That file is **non-normative history** — where it disagrees with this brief, this brief wins.
 
 ---
 
@@ -106,7 +106,7 @@ Listing sorts by **title descending** — the ISO prefix makes that chronologica
 
 ## Authoring convention (the parser's contract)
 
-Derived from my example note, `docs/agenda-service/appendix/1-example-note.md`. The parser depends only on this convention, never on any existing note content.
+Derived from my example note, `docs/agenda-service/appendix/01-example-note.md`. The parser depends only on this convention, never on any existing note content.
 
 - The note body is Markdown. A **blockquote (`>`) is a comment** — the parser ignores it completely. This is how I keep private notes in the master.
 - The body is divided into **h1 sections (`# `)**: a special **`# Metadata`** section plus five body sections — **Notes, Absences, Reports & Updates, New Business, Reminders**. The set of body sections is open; a sixth would be treated as a normal body section.
@@ -131,7 +131,7 @@ Derived from my example note, `docs/agenda-service/appendix/1-example-note.md`. 
 
 ## The parser — start from my scanner, then harden
 
-`docs/agenda-service/appendix/2-scanner.md` holds my existing prototype in a fenced Go block. It already builds the correct tree: h1 → h2 → key-value, using a depth/stack discipline with a skip-level guard. **Keep that logic and the `Block{Key, Content, Children}` shape.** Note that the prototype declares `package service` and takes an `*os.File` — both are artifacts of the prototype. The target is **`package parser`**.
+`docs/agenda-service/appendix/02-scanner.md` holds my existing prototype in a fenced Go block. It already builds the correct tree: h1 → h2 → key-value, using a depth/stack discipline with a skip-level guard. **Keep that logic and the `Block{Key, Content, Children}` shape.** Note that the prototype declares `package service` and takes an `*os.File` — both are artifacts of the prototype. The target is **`package parser`**.
 
 Required changes to make it service-grade:
 
@@ -140,13 +140,13 @@ Required changes to make it service-grade:
 - **Trim values.**
 - Otherwise preserve behavior: blockquotes and blank lines skipped; anything else unrecognized is a parse error for that note.
 
-`docs/agenda-service/appendix/3-scanner-result.md` is the **exact expected output** for `1-example-note.md`. Treat it as the parser's test fixture.
+`docs/agenda-service/appendix/03-scanner-result.md` is the **exact expected output** for `01-example-note.md`. Treat it as the parser's test fixture.
 
 ---
 
 ## Settings and data
 
-`docs/agenda-service/appendix/4-settings-and-data.md` describes a JSON file holding what doesn't belong in the notes because it changes infrequently and would clutter them: the elder roster and per-section list types.
+`docs/agenda-service/appendix/04-settings-and-data.md` describes a JSON file holding what doesn't belong in the notes because it changes infrequently and would clutter them: the elder roster and per-section list types.
 
 - Lives at `agenda-service/config/settings.json`, path supplied by `AGENDA_SETTINGS_PATH`, bind-mounted read-only into the container.
 - **Validated at startup — fatal on failure.**
@@ -190,7 +190,7 @@ Two are *structural* (full section/item skeleton); two are *extractive* (walk th
 
 ### 1. Agenda (print, 8.5×11). Structural.
 
-The hardcopy handed to the elders. Reference: `appendix/5-printed-agenda.md`.
+The hardcopy handed to the elders. Reference: `docs/agenda-service/appendix/05-printed-agenda.md`.
 
 - **Head matter:** church name on the left, "Session Meeting Agenda" with the date beneath it on the right. `type` is not used.
 - **Roll-call band** beneath the masthead: every elder active at the meeting date, sorted last name then first, in `elderColumns` columns, each with a CSS-drawn checkbox.
@@ -199,7 +199,7 @@ The hardcopy handed to the elders. Reference: `appendix/5-printed-agenda.md`.
 
 ### 2. Red-letter agenda / Pastor's copy (screen only — NOT printed). Structural.
 
-Reference: `appendix/6-red-letter-agenda.md`.
+Reference: `docs/agenda-service/appendix/06-red-letter-agenda.md`.
 
 This is **not** the Agenda view with red added. It's an **independent, email-safe rendering** that happens to reuse the same section/item structure and the same `listType` settings. No masthead, no roll call, no `@page`, different type treatment. Don't try to subclass the agenda template.
 
@@ -211,7 +211,7 @@ This is **not** the Agenda view with red added. It's an **independent, email-saf
 
 ### 3. Minutes (print, 8.5×11). Extractive.
 
-Reference: `appendix/7-meeting-minutes.md`.
+Reference: `docs/agenda-service/appendix/07-meeting-minutes.md`.
 
 - **Head matter:** church name on the left, "Session Meeting Minutes" and the date on the right.
 - **Preamble**, assembled from Metadata:
@@ -229,7 +229,7 @@ Reference: `appendix/7-meeting-minutes.md`.
 
 ### 4. Action Items (print, 8.5×11). Extractive.
 
-Reference: `appendix/8-action-items-report.md`.
+Reference: `docs/agenda-service/appendix/08-action-items-report.md`.
 
 - **Head matter:** "Saint Andrew's Chapel Session Meeting Action Items" on one line, date in bold beneath, both centered. `type` is not used.
 - Then a flat `<ol>` — one `<li>` per h2 item that has an `actionItem` child, containing the item title and one `<p><strong>Action Item:</strong> {value}</p>` per `actionItem` child. Items without one are omitted.
@@ -286,7 +286,7 @@ Per the repo's `CLAUDE.md`:
 
 ## Checkpoints — stop and show me at each
 
-1. **Parser first.** Implement `parser` against `1-example-note.md` and show me it reproduces `3-scanner-result.md` exactly. Stop there.
+1. **Parser first.** Implement `parser` against `01-example-note.md` and show me it reproduces `03-scanner-result.md` exactly. Stop there.
 2. **Then the DB role.** Show me the `CREATE ROLE`/`GRANT` SQL with the reasoning and tradeoffs, before touching `docker-compose.yml`. Stop there.
 3. Then views, then the HTTP layer.
 

@@ -12,7 +12,7 @@ import (
 // duplicated here, so the views tests can never drift from the brief's
 // documented example — same rationale as parser_test.go.
 const (
-	exampleNotePath    = "../../docs/agenda-service/appendix/1-example-note.md"
+	exampleNotePath    = "../../docs/agenda-service/appendix/01-example-note.md"
 	seededSettingsPath = "../config/settings.json"
 )
 

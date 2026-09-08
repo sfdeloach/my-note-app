@@ -6,7 +6,7 @@ import (
 )
 
 // TestLoad_SeededFile confirms config/settings.json (seeded verbatim from
-// docs/agenda-service/appendix/4-settings-and-data.md) loads cleanly —
+// docs/agenda-service/appendix/04-settings-and-data.md) loads cleanly —
 // the roadmap's first Stage 3 Verify bullet.
 func TestLoad_SeededFile(t *testing.T) {
 	s, err := Load("../config/settings.json")

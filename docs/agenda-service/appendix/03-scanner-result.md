@@ -1,4 +1,4 @@
-This is the tree that `1-example-note.md` parses to. It is the parser's **test fixture** — the implementation must reproduce it exactly.
+This is the tree that `01-example-note.md` parses to. It is the parser's **test fixture** — the implementation must reproduce it exactly.
 
 Two things to note when comparing:
 

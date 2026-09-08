@@ -1,8 +1,8 @@
 // Command agenda-service serves the note listing and the four rendered
 // views (Agenda, Red-Letter Agenda, Minutes, Action Items) for Session
 // Meeting notes stored in the shared Joplin Postgres database. See
-// docs/agenda-service/initial-prompt.md for the full brief and
-// docs/agenda-service/roadmap.md for how it was built.
+// docs/agenda-service/01-initial-build/prompt.md for the full brief and
+// docs/agenda-service/01-initial-build/roadmap.md for how it was built.
 package main
 
 import (

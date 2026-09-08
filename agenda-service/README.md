@@ -10,10 +10,11 @@ its own: it's reachable only over the WireGuard tunnel or trusted home LAN,
 same trust model as Joplin Server itself (see the root `CLAUDE.md`).
 
 Full design history — why direct Postgres, why no headless Joplin client,
-the per-stage decisions — lives in `docs/agenda-service/roadmap.md` and the
-original brief, `docs/agenda-service/initial-prompt.md`. This file only
-covers what's needed day to day: how to author a note this service can
-render, and how to add a new view.
+the per-stage decisions — lives in
+`docs/agenda-service/01-initial-build/roadmap.md` and the original brief,
+`docs/agenda-service/01-initial-build/prompt.md`. This file only covers
+what's needed day to day: how to author a note this service can render, and
+how to add a new view.
 
 ## Authoring a compliant meeting note
 
@@ -88,7 +89,7 @@ this is deliberate, to catch typos rather than silently dropping someone
 from the roster. No `# Absences` section at all is fine (not every meeting
 has absences).
 
-**Full worked example**: `docs/agenda-service/appendix/1-example-note.md`
+**Full worked example**: `docs/agenda-service/appendix/01-example-note.md`
 is the brief's reference note — every rule above is demonstrated there,
 including the valueless-key and Absences-error cases in context.
 

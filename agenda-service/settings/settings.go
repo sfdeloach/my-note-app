@@ -2,7 +2,7 @@
 // per-section list-type configuration that doesn't belong in a note body
 // because it changes infrequently. It knows nothing about Joplin,
 // Postgres, or the parser's tree — it only understands the settings.json
-// shape described in docs/agenda-service/appendix/4-settings-and-data.md.
+// shape described in docs/agenda-service/appendix/04-settings-and-data.md.
 package settings
 
 import (

@@ -8,7 +8,7 @@ import (
 
 // jsonSettings mirrors the on-disk settings.json shape exactly (the
 // {"settings": {...}, "data": {"elders": [...]}} envelope from
-// docs/agenda-service/appendix/4-settings-and-data.md), separately from
+// docs/agenda-service/appendix/04-settings-and-data.md), separately from
 // the flat Settings type the rest of the package exposes.
 type jsonSettings struct {
 	Settings struct {
