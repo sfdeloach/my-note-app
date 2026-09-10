@@ -87,9 +87,10 @@ A single fenced block with the info string `member-updates`, under its own
 
 ```member-updates
 New Members
-Name | Date Received | Notes
-Jane Q. Doe | 2026-09-07 | Profession of faith
-John & Mary Smith | 2026-09-07 | Transfer of letter, **PCA**
+First Name | Middle | Last Name | Date | Received By
+Jane | Q. | Doe | September 7, 2026 | Profession of faith
+Bob | | Smith | September 7, 2026 | Profession of faith
+Karen | | Doe | September 7, 2026 | Profession of faith
 
 Deaths
 Name | Date

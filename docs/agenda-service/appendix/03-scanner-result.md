@@ -2,8 +2,9 @@ This is the tree that `01-example-note.md` parses to. It is the parser's **test 
 
 Two things to note when comparing:
 
-- `&` appears as `\u0026` because that is what Go's `encoding/json` emits by default.
+- `&` and `>` appear as `\u0026` / `\u003e` because that is what Go's `encoding/json` emits by default.
 - The three valueless key lines under "Minister Resolution" produce no blocks — they are skipped with warnings.
+- The trailing `# Member Updates` h1 has no `##` items, so it is an empty section (`children: null`). The `member-updates` fenced block after it is a top-level, non-`h1` node: its key is the fence info string and its content is the fence body verbatim. Only the Minutes view reads it.
 
 Full JSON example:
 
@@ -115,11 +116,6 @@ Full JSON example:
             "children": null
           }
         ]
-      },
-      {
-        "key": "item",
-        "content": "Membership Updates",
-        "children": null
       }
     ]
   },
@@ -193,6 +189,16 @@ Full JSON example:
         ]
       }
     ]
+  },
+  {
+    "key": "h1",
+    "content": "Member Updates",
+    "children": null
+  },
+  {
+    "key": "member-updates",
+    "content": "New Members\nFirst Name | Middle | Last Name | Date | Received By\nSteve | J | Anyone | July 26, 2026 | Profession of Faith\nSally | L | Anyone | July 26, 2026 | Profession of Faith\nSammy | A | Anyone | July 26, 2026 | Profession of Faith\nSerge | O | Anyone | July 26, 2026 | Profession of Faith\nSarah | T | Anyone | July 26, 2026 | Profession of Faith\n\nBaptisms\nFirst Name | Middle | Last Name | Date Baptized | Baptism Type | Parents\nJonathan | Ransom | Peeler | August 16, 2026 | Non-communing | Daniel \u0026 Bonnie Peeler\n\nTransfers\nFirst Name | Middle | Last Name | Transfer Date | Transfer To\nPeter | J | Benyola | August 1, 2026 | St. Paul's PCA\n\nRemovals\nFirst Name | Middle | Last Name | Removed | Reason\nSarah | F | Fowler | July 12, 2026 | non-attendance \u003e 1 year\n\nDeaths\nFirst Name | Middle | Last Name | Date\nBob | K | Moser | July 21, 2026",
+    "children": null
   }
 ]
 ```
@@ -200,9 +206,9 @@ Full JSON example:
 Expected warnings from this note:
 
 ```
-line 62: key "motion" has no value, skipped
-line 63: key "comments" has no value, skipped
-line 64: key "actionItem" has no value, skipped
+line 60: key "motion" has no value, skipped
+line 61: key "comments" has no value, skipped
+line 62: key "actionItem" has no value, skipped
 ```
 
 (Line numbers are illustrative — assert on the key names and the count, not the exact lines, so the fixture doesn't break every time the example note is edited.)

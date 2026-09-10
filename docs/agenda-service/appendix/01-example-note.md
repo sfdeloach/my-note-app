@@ -43,10 +43,6 @@
 
 - **motion:** (Crotty) to appoint Kevin Struyk as the moderator in Burk Parsons' absence, carried.
 
-## Membership Updates
-
-> make sure the Smiths are included in the update
-
 # New Business
 
 > All agenda items under New Business are indicated by an h2 heading.
@@ -82,3 +78,33 @@
 ## September 1, 2026, Called Meeting
 
 - **redLetter:** This meeting was called for the purpose of meeting with Burk during July's stated meeting
+
+# Member Updates
+
+> The `member-updates` fenced block records the membership changes ratified at the meeting. Stanzas are separated by a blank line: line 1 is the table title, line 2 the pipe-delimited header row, the rest are pipe-delimited data rows. Valid titles are New Members, Baptisms, Transfers, Removals, and Deaths; they render in that order regardless of authoring order. Only the Minutes view renders this section — see `09-member-updates.md`.
+
+```member-updates
+New Members
+First Name | Middle | Last Name | Date | Received By
+Steve | J | Anyone | July 26, 2026 | Profession of Faith
+Sally | L | Anyone | July 26, 2026 | Profession of Faith
+Sammy | A | Anyone | July 26, 2026 | Profession of Faith
+Serge | O | Anyone | July 26, 2026 | Profession of Faith
+Sarah | T | Anyone | July 26, 2026 | Profession of Faith
+
+Baptisms
+First Name | Middle | Last Name | Date Baptized | Baptism Type | Parents
+Jonathan | Ransom | Peeler | August 16, 2026 | Non-communing | Daniel & Bonnie Peeler
+
+Transfers
+First Name | Middle | Last Name | Transfer Date | Transfer To
+Peter | J | Benyola | August 1, 2026 | St. Paul's PCA
+
+Removals
+First Name | Middle | Last Name | Removed | Reason
+Sarah | F | Fowler | July 12, 2026 | non-attendance > 1 year
+
+Deaths
+First Name | Middle | Last Name | Date
+Bob | K | Moser | July 21, 2026
+```

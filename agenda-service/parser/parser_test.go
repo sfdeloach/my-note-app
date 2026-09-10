@@ -48,6 +48,128 @@ func TestParseExampleNote(t *testing.T) {
 	}
 }
 
+func TestParseFencedBlockTerminated(t *testing.T) {
+	body := "# Member Updates\n\n" +
+		"```member-updates\n" +
+		"New Members\n" +
+		"First | Last\n" +
+		"Jane | Doe\n" +
+		"```\n"
+
+	blocks, warnings, err := Parse(body)
+	if err != nil {
+		t.Fatalf("Parse returned error: %v", err)
+	}
+	if len(warnings) != 0 {
+		t.Fatalf("got %d warnings, want 0: %+v", len(warnings), warnings)
+	}
+	if len(blocks) != 2 {
+		t.Fatalf("got %d top-level blocks, want 2: %+v", len(blocks), blocks)
+	}
+
+	if blocks[0].Key != "h1" || blocks[0].Content != "Member Updates" || blocks[0].Children != nil {
+		t.Errorf("blocks[0] = %+v, want an empty h1 %q", blocks[0], "Member Updates")
+	}
+
+	fence := blocks[1]
+	if fence.Key != "member-updates" {
+		t.Errorf("fence key = %q, want %q", fence.Key, "member-updates")
+	}
+	if fence.Children != nil {
+		t.Errorf("fence children = %+v, want nil", fence.Children)
+	}
+	wantContent := "New Members\nFirst | Last\nJane | Doe"
+	if fence.Content != wantContent {
+		t.Errorf("fence content = %q, want %q", fence.Content, wantContent)
+	}
+}
+
+func TestParseFencedBlockCapturesOtherwiseUnrecognizedLines(t *testing.T) {
+	// A markdown table row and a bare prose line both fail the parser
+	// outside a fence; inside one they must be taken verbatim.
+	body := "```member-updates\n" +
+		"| a | b |\n" +
+		"random text with no leading dash\n" +
+		"```\n"
+
+	blocks, _, err := Parse(body)
+	if err != nil {
+		t.Fatalf("Parse returned error: %v", err)
+	}
+	if len(blocks) != 1 {
+		t.Fatalf("got %d blocks, want 1", len(blocks))
+	}
+	wantContent := "| a | b |\nrandom text with no leading dash"
+	if blocks[0].Content != wantContent {
+		t.Errorf("content = %q, want %q", blocks[0].Content, wantContent)
+	}
+}
+
+func TestParseFencedBlockInfoString(t *testing.T) {
+	cases := []struct {
+		name    string
+		open    string
+		wantKey string
+	}{
+		{"named", "```json", "json"},
+		{"empty", "```", ""},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			body := tc.open + "\nfoo\n```\n"
+			blocks, _, err := Parse(body)
+			if err != nil {
+				t.Fatalf("Parse returned error: %v", err)
+			}
+			if len(blocks) != 1 {
+				t.Fatalf("got %d blocks, want 1", len(blocks))
+			}
+			if blocks[0].Key != tc.wantKey {
+				t.Errorf("key = %q, want %q", blocks[0].Key, tc.wantKey)
+			}
+			if blocks[0].Content != "foo" {
+				t.Errorf("content = %q, want %q", blocks[0].Content, "foo")
+			}
+		})
+	}
+}
+
+func TestParseFencedBlockUnterminated(t *testing.T) {
+	body := "# Notes\n\n```member-updates\nNew Members\nJane | Doe\n"
+
+	blocks, warnings, err := Parse(body)
+	if err != nil {
+		t.Fatalf("Parse returned error: %v", err)
+	}
+	if len(warnings) != 1 {
+		t.Fatalf("got %d warnings, want 1: %+v", len(warnings), warnings)
+	}
+	if warnings[0].Line != 3 {
+		t.Errorf("warning line = %d, want 3 (the fence-open line)", warnings[0].Line)
+	}
+	if len(blocks) != 2 || blocks[1].Key != "member-updates" {
+		t.Fatalf("want an h1 then a member-updates block, got %+v", blocks)
+	}
+	if blocks[1].Content != "New Members\nJane | Doe" {
+		t.Errorf("content = %q, want the captured-to-EOF body", blocks[1].Content)
+	}
+}
+
+func TestParseFencedBlockNotNestedUnderHeading(t *testing.T) {
+	body := "# Member Updates\n\n```member-updates\nDeaths\nName | Date\n```\n"
+
+	blocks, _, err := Parse(body)
+	if err != nil {
+		t.Fatalf("Parse returned error: %v", err)
+	}
+	if len(blocks) != 2 {
+		t.Fatalf("got %d top-level blocks, want 2 siblings", len(blocks))
+	}
+	if blocks[0].Children != nil {
+		t.Errorf("the h1 has children %+v, want the fence to be a sibling, not a child", blocks[0].Children)
+	}
+}
+
 // loadExpectedTree extracts the fenced ```json code block from the scanner
 // result fixture and unmarshals it into the tree shape Parse produces.
 func loadExpectedTree(t *testing.T) []*Block {

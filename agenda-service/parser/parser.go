@@ -26,6 +26,9 @@ var (
 
 	valuelessKeyRule = regexp.MustCompile(`^- \*\*([A-Za-z]+):\*\*\s*$`)
 	safeSkipRegex    = regexp.MustCompile(`^>.*$|^\s*$`)
+
+	fenceOpenRule  = regexp.MustCompile("^```(\\S*)\\s*$")
+	fenceCloseRule = regexp.MustCompile("^```\\s*$")
 )
 
 // Block is a node in the parsed note tree: an h1 section, an h2 item, or a
@@ -52,13 +55,54 @@ func Parse(body string) ([]*Block, []Warning, error) {
 		blocks   []*Block
 		warnings []Warning
 		stack    []*Block // stack[i] = current open ancestor at depth i
+
+		inFence    bool
+		fenceInfo  string
+		fenceStart int
+		fenceBody  strings.Builder
 	)
+
+	// emitFence appends the captured fenced block as a top-level (depth 0)
+	// node. It carries the info string as its Key and the verbatim body as
+	// its Content, and nothing nests under it — the stack is cleared so a
+	// following key-value line does not attach to it.
+	emitFence := func() {
+		stack = stack[:0]
+		blocks = append(blocks, &Block{Key: fenceInfo, Content: fenceBody.String()})
+	}
 
 	scanner := bufio.NewScanner(strings.NewReader(body))
 	lineNumber := 1
 
 	for scanner.Scan() {
 		line := scanner.Text()
+
+		// Fenced-block capture. Between an opening ```<info> line and the
+		// next closing ``` line, every line is taken verbatim — no rule
+		// matching, no "unrecognized line" error. This is what lets a
+		// ```member-updates block (and any stray fenced content in a
+		// legacy note) sit in a note without failing the whole parse.
+		if inFence {
+			if fenceCloseRule.MatchString(line) {
+				emitFence()
+				inFence = false
+			} else {
+				if fenceBody.Len() > 0 {
+					fenceBody.WriteByte('\n')
+				}
+				fenceBody.WriteString(line)
+			}
+			lineNumber++
+			continue
+		}
+		if m := fenceOpenRule.FindStringSubmatch(line); m != nil {
+			inFence = true
+			fenceInfo = m[1]
+			fenceStart = lineNumber
+			fenceBody.Reset()
+			lineNumber++
+			continue
+		}
 
 		matched := false
 		for _, rule := range rules {
@@ -109,6 +153,18 @@ func Parse(body string) ([]*Block, []Warning, error) {
 		}
 
 		lineNumber++
+	}
+
+	// An unterminated fence is a non-structural slip, not a fatal one:
+	// capture what we have to end of note and warn, consistent with how a
+	// valueless key line is handled.
+	if inFence {
+		warnings = append(warnings, Warning{
+			Line:    fenceStart,
+			Key:     fenceInfo,
+			Message: fmt.Sprintf("line %d: fenced block %q not closed, captured to end of note", fenceStart, fenceInfo),
+		})
+		emitFence()
 	}
 
 	if err := scanner.Err(); err != nil {
