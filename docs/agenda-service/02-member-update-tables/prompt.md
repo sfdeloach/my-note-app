@@ -29,7 +29,8 @@ the data in the master note must not disturb any existing authoring convention.
   `docs/agenda-service/appendix/09-member-updates.md` — to be authored as part of
   this effort, following the pattern of appendices 5–8 (a fenced ` ```html `
   golden document plus a "what is normative / what is not" preamble). I will
-  supply the CSS I want; don't invent table styling before I do.
+  supply the CSS I want; don't invent table styling before I do, however you may
+  audit the CSS I provide to ensure it conforms to best practices.
 
 ---
 
