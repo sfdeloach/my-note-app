@@ -1,3 +1,15 @@
+This specifies the **Member Updates** section of the Minutes view: a run of small tables recording the membership changes ratified at a meeting, placed between the last motion/comment paragraph and the attestation `<footer>`.
+
+**This section appears in the Minutes view only** — never the Agenda, Red-Letter, or Action Items views. It is driven by a `member-updates` fenced block in the master note (authoring format in `agenda-service/README.md`, worked example in `01-example-note.md`). A meeting with no `member-updates` block, or a block whose stanzas are all empty, renders nothing here — not even the `<h2>`.
+
+**What is normative: the DOM and the CSS.** One `<h2>Member Updates</h2>` above the tables; then, for each non-empty table in the fixed order New Members → Baptisms → Transfers → Removals → Deaths, an `<h3>` title followed by a `<table>` with `<thead>`/`<tbody>` and one `<tr>` per row. Columns are whatever the block's header row declares — no per-table schema is hard-coded — so the `<th>` set varies table to table. A table with no data rows is omitted, `<h3>` and all.
+
+**What is not normative: the rest of the page.** Masthead, preamble sentence, rosters, the motion/comment paragraphs, and the footer are here only for context and are specified by `07-meeting-minutes.md`; the motion text is illustrative and does not track `01-example-note.md`.
+
+- Every cell runs through the hand-rolled bold pass, same as any other authored value: `**bold**` → `<strong>`, and `& < > ' "` are HTML-escaped. The golden HTML below uses the readable forms (`&amp;`, `&gt;`, a literal `'`); the live serializer emits numeric entities where they differ (notably `&#39;` for `'`).
+- The `@page` rule, screen chrome, and `@media print` block are shared with the Agenda and Action Items views. The Cambria font stack is not — Times New Roman on the agenda, Cambria here, deliberately.
+- In print, `<thead>` is `display: table-header-group` so a table broken across a page repeats its header row. (That is already the browser default for `<thead>`; the rule just states the intent.)
+
 ```html
 <!-- Look at the comments for notes about the new CSS and table feature -->
 <!doctype html>
@@ -69,6 +81,12 @@
             padding: 0;
         }
 
+        /* h3 is only ever a table title here; give it a little space above
+           so it doesn't butt against the preceding table. */
+        h3 {
+            margin-top: 1rem;
+        }
+
         table {
             border-collapse: collapse;
             margin-bottom: 1rem;
@@ -86,7 +104,7 @@
         }
 
         td {
-            padding: 0 0.5rem;
+            padding: 0.25rem 0.5rem;
         }
     </style>
 </head>
@@ -292,7 +310,7 @@
                 <td>Peeler</td>
                 <td>August 16, 2026</td>
                 <td>Non-communing</td>
-                <td>Daniel & Bonnie Peeler</td>
+                <td>Daniel &amp; Bonnie Peeler</td>
             </tr>
         </tbody>
     </table>
@@ -338,7 +356,7 @@
                 <td>F</td>
                 <td>Fowler</td>
                 <td>July 12, 2026</td>
-                <td>non-attendance > 1 year</td>
+                <td>non-attendance &gt; 1 year</td>
             </tr>
         </tbody>
     </table>

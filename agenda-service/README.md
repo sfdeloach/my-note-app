@@ -89,6 +89,44 @@ this is deliberate, to catch typos rather than silently dropping someone
 from the roster. No `# Absences` section at all is fine (not every meeting
 has absences).
 
+**`# Member Updates`**: membership changes ratified at the meeting, recorded
+as a single fenced block and **rendered in the Minutes view only** (never
+Agenda, Red-Letter, or Action Items). Put it under its own `# Member
+Updates` h1 at the end of the note:
+
+````markdown
+# Member Updates
+
+```member-updates
+New Members
+First Name | Middle | Last Name | Date | Received By
+Jane | Q. | Doe | September 7, 2026 | Profession of faith
+
+Deaths
+Name | Date
+Robert Roe | 2026-08-20
+```
+````
+
+- Inside the block, **stanzas are separated by one blank line**. Each
+  stanza is: line 1 the table title, line 2 the pipe-delimited header row,
+  the rest pipe-delimited data rows. Cells are trimmed; there is no escape
+  for a literal `|`.
+- **Valid titles** are `New Members`, `Baptisms`, `Transfers`, `Removals`,
+  `Deaths`. They always render in that order regardless of authoring order.
+  Any other title, a data row whose cell count differs from its header, a
+  duplicate title, or a second `member-updates` block is a **hard error**
+  for the whole note.
+- **Columns are whatever the header row declares** — the service hard-codes
+  no per-table schema, so each table's columns can differ.
+- A stanza with a title and header but **no data rows is omitted**. A note
+  with no `member-updates` block, or one whose stanzas are all empty,
+  renders no Member Updates section at all.
+- `**bold**` works in a cell, same as any other value.
+
+The DOM and CSS for the rendered section are specified in
+`docs/agenda-service/appendix/09-member-updates.md`.
+
 **Full worked example**: `docs/agenda-service/appendix/01-example-note.md`
 is the brief's reference note — every rule above is demonstrated there,
 including the valueless-key and Absences-error cases in context.

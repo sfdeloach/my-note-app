@@ -40,6 +40,7 @@ rather than copied into a feature folder:
 | `06-red-letter-agenda.md` | Normative spec — Red-Letter Agenda view |
 | `07-meeting-minutes.md` | Normative spec — Minutes view |
 | `08-action-items-report.md` | Normative spec — Action Items view |
+| `09-member-updates.md` | Normative spec — Minutes "Member Updates" section |
 
 **`01-example-note.md`, `03-scanner-result.md`, and `04-settings-and-data.md`
 are live Go test fixtures** — loaded by tests in
@@ -52,3 +53,7 @@ those tests. New features extend this pool rather than fork it.
 - **`01-initial-build/`** — the original bring-up: `prompt.md` (the build
   brief) + `roadmap.md` (7 stages, all `(done)`). The service is
   code-complete and live-deployed on the Pi.
+- **`02-member-update-tables/`** — `prompt.md` for the Minutes "Member
+  Updates" section (a `member-updates` fenced block → up to five tables).
+  No `roadmap.md` — a one-to-two-session feature. Adds
+  `appendix/09-member-updates.md`.

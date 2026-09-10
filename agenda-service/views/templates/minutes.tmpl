@@ -21,6 +21,41 @@
         margin: 0;
         padding: 0;
       }
+
+      /* h3 appears only as a Member Updates table title; give it back a
+         little space above so it doesn't butt against the table before
+         it. */
+      h3 {
+        margin-top: 1rem;
+      }
+
+      table {
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+
+      th {
+        text-align: left;
+        padding: 0.5rem;
+      }
+
+      td {
+        padding: 0.25rem 0.5rem;
+      }
+
+      /* table-header-group is already the default for thead; state it so a
+         table that breaks across printed pages keeps repeating its head. */
+      @media print {
+        thead {
+          display: table-header-group;
+        }
+      }
     </style>
   </head>
 
@@ -55,6 +90,27 @@
     {{else}}
     <p>{{.Value}}</p>
     {{end}} {{end}}
+
+    {{if .MemberUpdates}}
+    <h2>Member Updates</h2>
+    {{range .MemberUpdates}}
+    <h3>{{.Title}}</h3>
+    <table>
+      <thead>
+        <tr>
+          {{range .Headers}}<th>{{.}}</th>{{end}}
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Rows}}
+        <tr>
+          {{range .}}<td>{{.}}</td>{{end}}
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+    {{end}}
+    {{end}}
 
     <footer>
       <div>

@@ -26,7 +26,11 @@ sub-project: a Go HTTP service that renders four views (Agenda, Red-Letter
 Agenda, Minutes, Action Items) directly from Session Meeting notes in the
 Joplin database, read-only, no Data API involved. All 7 stages of its own
 roadmap (`docs/agenda-service/01-initial-build/roadmap.md`) are done, and
-it's live-deployed on the Pi as a `compose.yml` service.
+it's live-deployed on the Pi as a `compose.yml` service. A later feature
+effort (`docs/agenda-service/02-member-update-tables/`) added a **Member
+Updates** section to the Minutes view — authored as a fenced
+` ```member-updates ` block, five tables at most; the parser now captures
+fenced content verbatim instead of erroring on it.
 `agenda-service/README.md` covers the day-to-day: the note-authoring
 convention and how to add a new view. The roadmap and
 `docs/agenda-service/01-initial-build/prompt.md` (the original brief) hold

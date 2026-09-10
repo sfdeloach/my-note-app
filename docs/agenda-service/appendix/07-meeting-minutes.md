@@ -19,6 +19,8 @@ The `**REMOVE**` / `**ADD**` in the bank motion come from the note body and are 
 
 The `@page` rule, screen chrome, and `@media print` block are shared with the Agenda and Action Items views. The font stack is not — Cambria here, Times New Roman on the agenda, and that difference is intentional.
 
+**Member Updates** render between the last motion/comment paragraph and the attestation `<footer>` when the note carries a `member-updates` block; that section's DOM and CSS are specified in `09-member-updates.md`.
+
 ```html
 <!doctype html>
 <html lang="en">
