@@ -121,9 +121,33 @@ cmd_up() {
   db_container="$(docker compose -p "$PROJECT_NAME" -f "$COMPOSE_FILE" ps -q database)"
   wait_healthy "$db_container" 60
 
+  # Roles are cluster-wide, so pg_dump never includes them -- but the dump's
+  # GRANTs reference agenda_reader, and ON_ERROR_STOP aborts the restore at
+  # the first one if the role is missing. Create it first, with the password
+  # from the BACKUP's .env (same "backup must be self-sufficient" rule as
+  # above). Fed over stdin, never as a CLI arg, so the password can't appear
+  # in `ps`; psql's output is discarded since an error could echo it back.
+  local agenda_password
+  agenda_password="$(grep -E '^AGENDA_DB_PASSWORD=' "$WORKDIR/.env" | cut -d= -f2-)"
+  [[ -n "$agenda_password" ]] \
+    || { echo "ERROR: AGENDA_DB_PASSWORD missing from the backup's .env -- cannot recreate agenda_reader." >&2; exit 1; }
+  # Escape for a single-quoted psql meta-command argument: \ -> \\, ' -> ''
+  local pw_escaped="${agenda_password//\\/\\\\}"
+  pw_escaped="${pw_escaped//\'/\'\'}"
+  echo "Creating agenda_reader role..."
+  { printf "\\\\set agenda_password '%s'\n" "$pw_escaped"; cat "$SCRIPT_DIR/sql/agenda-reader-role.sql"; } \
+    | docker exec -i "$db_container" psql -q -U "$restored_user" -d "$restored_db" --set ON_ERROR_STOP=1 >/dev/null 2>&1 \
+    || { echo "ERROR: failed to create agenda_reader role (psql output suppressed -- it could echo the password)." >&2; exit 1; }
+  unset agenda_password pw_escaped
+
   echo "Restoring dump into throwaway database..."
-  docker exec -i "$db_container" psql -U "$restored_user" -d "$restored_db" --set ON_ERROR_STOP=1 \
-    < "$WORKDIR/dump.sql" > "$WORKDIR/psql-restore.log" 2>&1
+  if ! docker exec -i "$db_container" psql -U "$restored_user" -d "$restored_db" --set ON_ERROR_STOP=1 \
+      < "$WORKDIR/dump.sql" > "$WORKDIR/psql-restore.log" 2>&1; then
+    # The EXIT trap deletes this log, so surface the failure before it goes.
+    echo "ERROR: restoring dump.sql failed. Last lines of psql output:" >&2
+    tail -n 20 "$WORKDIR/psql-restore.log" >&2
+    exit 1
+  fi
 
   echo "Starting throwaway joplin-server..."
   docker compose -p "$PROJECT_NAME" -f "$COMPOSE_FILE" --env-file "$WORKDIR/.env" up -d joplin-server

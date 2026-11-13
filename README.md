@@ -88,10 +88,25 @@ and confirm your notes are present and correct. When done:
 ./scripts/restore-test.sh down          # tears down the throwaway stack + volume
 ```
 
+**Postgres roles aren't in the dump.** `pg_dump` backs up one database,
+but roles (logins) belong to the whole Postgres cluster, so they're never
+included — while the dump's `GRANT ... TO agenda_reader` statements are.
+`joplin` itself is recreated automatically by the Postgres image from
+`POSTGRES_USER`, but the agenda-service's read-only `agenda_reader` role
+must exist *before* the dump loads, or the restore stops at its first
+GRANT. `restore-test.sh` handles this by running
+`scripts/sql/agenda-reader-role.sql` (password from `AGENDA_DB_PASSWORD` in
+the backup's `.env`, fed over stdin so it never hits the process list). A
+real disaster recovery onto a fresh Pi must do the same — see the script
+for the exact command. If another role is ever added, it needs the same
+treatment. (Found by the 2026-11-12 restore test, the first run after
+`agenda_reader` was created.)
+
 This is docs/roadmap.md Stage 5, run on a recurring quarterly basis (a calendar
-reminder is set). Last verified end-to-end: 2026-08-11 — 243 items restored,
-both accounts present, notes confirmed correct in the browser, ~30s to a
-restorable state.
+reminder is set). Last verified end-to-end: 2026-11-12 — 371 items restored
+(matching production), both accounts present, notes confirmed correct in the
+browser, `agenda_reader` recreated with SELECT-only access, ~90s to a
+restorable state. (Previous: 2026-08-11 — 243 items, ~30s.)
 
 **Why a separate compose file**: `compose.restore-test.yml` is a standalone
 file, not merged with `compose.yml` via multiple `-f` flags — Compose

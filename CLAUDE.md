@@ -76,8 +76,8 @@ a placeholder, not in `.env`.
 ## Conversation log
 
 `docs/conversations/` holds one numbered file per planning/work session
-(`00-initial-prompt.md` is the first; `17-...` is the most recent as of this
-writing — the Agenda Service roadmap-closeout entries). This is the durable
+(`00-initial-prompt.md` is the first; `19-...` is the most recent as of this
+writing — the 2026 Q4 quarterly restore test). This is the durable
 record of project history and decisions — at the end of a session with
 meaningful discussion or decisions, add the next numbered file summarizing
 what was discussed/decided/done. Expect this to happen less often now that
